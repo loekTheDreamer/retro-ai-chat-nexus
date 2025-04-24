@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,14 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Neoplay custom colors
+				neoplay: {
+					black: '#0A0A0A',
+					green: '#4AFF00',
+					darkGreen: '#39CC00',
+					gray: '#333333',
+					lightGray: '#555555'
 				}
 			},
 			borderRadius: {
@@ -84,11 +93,55 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pixel-shine': {
+					'0%': { 
+						boxShadow: '0 0 5px #4AFF00',
+						opacity: '1'
+					},
+					'50%': { 
+						boxShadow: '0 0 20px #4AFF00',
+						opacity: '0.8'
+					},
+					'100%': { 
+						boxShadow: '0 0 5px #4AFF00',
+						opacity: '1'
+					}
+				},
+				'slide-in-left': {
+					'0%': { transform: 'translateX(-100%)' },
+					'100%': { transform: 'translateX(0)' }
+				},
+				'slide-out-left': {
+					'0%': { transform: 'translateX(0)' },
+					'100%': { transform: 'translateX(-100%)' }
+				},
+				'slide-in-right': {
+					'0%': { transform: 'translateX(100%)' },
+					'100%': { transform: 'translateX(0)' }
+				},
+				'slide-out-right': {
+					'0%': { transform: 'translateX(0)' },
+					'100%': { transform: 'translateX(100%)' }
+				},
+				'text-flicker': {
+					'0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100%': { opacity: '1' },
+					'20%, 21.999%, 63%, 63.999%, 65%, 69.999%': { opacity: '0.4' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pixel-shine': 'pixel-shine 2s infinite ease-in-out',
+				'slide-in-left': 'slide-in-left 0.3s ease-out',
+				'slide-out-left': 'slide-out-left 0.3s ease-out',
+				'slide-in-right': 'slide-in-right 0.3s ease-out',
+				'slide-out-right': 'slide-out-right 0.3s ease-out',
+				'text-flicker': 'text-flicker 5s linear infinite'
+			},
+			fontFamily: {
+				'pixel': ['"Press Start 2P"', 'cursive'],
+				'mono': ['monospace']
 			}
 		}
 	},
