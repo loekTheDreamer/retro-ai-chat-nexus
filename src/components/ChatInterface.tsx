@@ -1,6 +1,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Send } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ChatMessage {
   id: number;
@@ -20,10 +21,26 @@ const ChatInterface = () => {
   ]);
   const [input, setInput] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Function to resize textarea based on content
+  const resizeTextarea = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "40px"; // Reset height to calculate correctly
+      const scrollHeight = textarea.scrollHeight;
+      // Limit height to approximately 4 rows (~120px)
+      textarea.style.height = `${Math.min(scrollHeight, 120)}px`;
+    }
+  };
+
+  useEffect(() => {
+    resizeTextarea();
+  }, [input]);
 
   const handleSendMessage = () => {
     if (input.trim() === "") return;
@@ -38,6 +55,11 @@ const ChatInterface = () => {
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
+
+    // Reset textarea height after sending
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "40px";
+    }
 
     // Simulate bot response after a delay
     setTimeout(() => {
@@ -98,13 +120,14 @@ const ChatInterface = () => {
       {/* Input area */}
       <div className="border-t-2 border-neoplay-green p-4">
         <div className="relative flex items-center">
-          <textarea
+          <Textarea
+            ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type your message..."
-            className="retro-input w-full pr-10 resize-none h-10 min-h-[40px] max-h-[120px] overflow-auto"
-            rows={1}
+            className="retro-input w-full pr-10 resize-none min-h-[40px] max-h-[120px] overflow-auto"
+            style={{ height: "40px" }}
           />
           <button
             onClick={handleSendMessage}
@@ -120,4 +143,3 @@ const ChatInterface = () => {
 };
 
 export default ChatInterface;
-
