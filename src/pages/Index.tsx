@@ -2,17 +2,25 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
+import WalletModal from '@/components/WalletModal';
 
 const Index = () => {
   const navigate = useNavigate();
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
 
   const handleConnect = () => {
+    setIsWalletModalOpen(true);
+  };
+
+  const handleWalletSelect = (wallet: string) => {
     setIsConnecting(true);
-    // Simulate connecting to wallet
+    setIsWalletModalOpen(false);
+    
+    // Simulate connecting to selected wallet
     setTimeout(() => {
       setIsConnecting(false);
-      toast.success("Wallet connected successfully!");
+      toast.success(`${wallet} connected successfully!`);
       navigate('/chat');
     }, 1500);
   };
@@ -49,6 +57,12 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      <WalletModal 
+        isOpen={isWalletModalOpen}
+        onClose={() => setIsWalletModalOpen(false)}
+        onWalletSelect={handleWalletSelect}
+      />
     </div>
   );
 };
