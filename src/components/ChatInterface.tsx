@@ -97,19 +97,19 @@ const ChatInterface = () => {
 
       {/* Input area */}
       <div className="border-t-2 border-neoplay-green p-4">
-        <div className="flex items-center">
+        <div className="relative flex items-center">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type your message..."
-            className="retro-input flex-1 resize-none h-10 min-h-[40px] max-h-[120px] overflow-auto"
+            className="retro-input w-full pr-10 resize-none h-10 min-h-[40px] max-h-[120px] overflow-auto"
             rows={1}
           />
           <button
             onClick={handleSendMessage}
             disabled={input.trim() === ""}
-            className="ml-2 p-2 bg-neoplay-green text-neoplay-black rounded-sm hover:bg-neoplay-darkGreen"
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-neoplay-green hover:text-neoplay-darkGreen disabled:opacity-50"
           >
             <Send size={20} />
           </button>
@@ -120,3 +120,4 @@ const ChatInterface = () => {
 };
 
 export default ChatInterface;
+
