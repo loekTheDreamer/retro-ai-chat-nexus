@@ -8,6 +8,7 @@ interface ChatMessage {
   sender: "user" | "bot";
   content: string;
   timestamp: Date;
+  isCode?: boolean;
 }
 
 const ChatInterface = () => {
@@ -51,6 +52,7 @@ const ChatInterface = () => {
       sender: "user",
       content: input,
       timestamp: new Date(),
+      isCode: input.startsWith("```") && input.endsWith("```"),
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -64,11 +66,40 @@ const ChatInterface = () => {
     // Simulate bot response after a delay
     setTimeout(() => {
       const botResponses = [
-        "I can help you create a pixel art platformer game. What theme are you thinking of?",
-        "You might want to consider adding power-ups to your game for extra excitement.",
-        "Your game concept sounds interesting! Let's develop it further.",
-        "I can generate some code for your game mechanics. What specifically do you need?",
-        "Would you like me to suggest some retro-style sound effects for your game?",
+        {
+          content: "Here's an example of a simple game loop:",
+          isCode: true,
+          codeContent: `function gameLoop() {
+  updateGameState();
+  renderGame();
+  requestAnimationFrame(gameLoop);
+}
+
+// Start the game
+gameLoop();`
+        },
+        {
+          content: "I can help you create a pixel art platformer game. What theme are you thinking of?",
+          isCode: false
+        },
+        {
+          content: "Here's a basic sprite class:",
+          isCode: true,
+          codeContent: `class Sprite {
+  constructor(x, y, width, height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
+
+  draw(ctx) {
+    ctx.fillStyle = '#4AFF00';
+    ctx.fillRect(this.x, this.y, 
+      this.width, this.height);
+  }
+}`
+        },
       ];
 
       const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
@@ -76,8 +107,10 @@ const ChatInterface = () => {
       const botMessage: ChatMessage = {
         id: messages.length + 2,
         sender: "bot",
-        content: randomResponse,
+        content: randomResponse.isCode ? randomResponse.content : randomResponse.content,
         timestamp: new Date(),
+        isCode: randomResponse.isCode,
+        ...(randomResponse.isCode && { content: randomResponse.codeContent }),
       };
 
       setMessages((prev) => [...prev, botMessage]);
@@ -104,10 +137,18 @@ const ChatInterface = () => {
               className={`max-w-[80%] px-4 py-2 rounded-sm ${
                 msg.sender === "user"
                   ? "bg-neoplay-gray text-white"
+                  : msg.isCode
+                  ? "bg-[#1A1F2C] text-[#C8C8C9] font-mono"
                   : "bg-neoplay-darkGreen bg-opacity-20 border border-neoplay-green text-neoplay-green"
               }`}
             >
-              <p className="whitespace-pre-wrap">{msg.content}</p>
+              {msg.isCode ? (
+                <pre className="whitespace-pre-wrap overflow-x-auto p-2">
+                  <code>{msg.content}</code>
+                </pre>
+              ) : (
+                <p className="whitespace-pre-wrap">{msg.content}</p>
+              )}
               <div className="text-xs text-gray-400 mt-1">
                 {msg.timestamp.toLocaleTimeString()}
               </div>
