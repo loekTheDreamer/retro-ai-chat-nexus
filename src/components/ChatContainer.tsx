@@ -4,8 +4,54 @@ import React, { useEffect, useRef, useState } from 'react';
 // import { AgentBubble } from './AgentBubble';
 // import { LoadingBubble } from './LoadingBubble';
 import { Message } from '@/types/message';
+import AceEditor from 'react-ace';
+import 'ace-builds/src-noconflict/theme-terminal';
+import { extractCode } from '@/utils/fileParser';
+import ace from 'ace-builds/src-noconflict/ace';
+
 // import { ImageBubble } from './ImageBubble';
 // import { ImageBubbleArray } from '../promptSection';
+
+ace.define(
+  'ace/theme/mycustom',
+  ['require', 'exports', 'module', 'ace/lib/dom'],
+  function (require, exports, module) {
+    exports.isDark = true;
+    exports.cssClass = 'ace-mycustom';
+    exports.cssText = `
+    .ace-mycustom .ace_gutter {
+      background: #102b13 !important;
+      color: #4AFF00 !important;
+      border-right: 1px solid #4AFF00 !important;
+    }
+    .ace-mycustom {
+      background-color: #102b13 !important;
+      color: #4AFF00 !important;
+      border: 1px solid #4AFF00;
+      font-family: 'Fira Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.95rem;
+    }
+    .ace-mycustom .ace_cursor {
+      color: #4AFF00 !important;
+    }
+    .ace-mycustom .ace_print-margin {
+      display: none !important;
+    }
+    .ace-mycustom .ace_marker-layer,
+    .ace-mycustom .ace_active-line {
+      background: none !important;
+    }
+    .ace-mycustom .ace_gutter-active-line {
+      background-color: #102b13 !important;
+    }
+    .ace-mycustom .ace_line {
+      color: #4AFF00 !important;
+    }
+    `;
+    const dom = require('../lib/dom');
+    dom.importCssString(exports.cssText, exports.cssClass);
+  }
+);
 
 interface ChatContainerProps {
   messages: Message[];
@@ -16,7 +62,7 @@ interface ChatContainerProps {
     newHistory: Message[] | ((prev: Message[]) => Message[])
   ) => void;
   // messageCount: number;
-  ref: React.RefObject<HTMLDivElement>;
+  chatEndRef: React.RefObject<HTMLDivElement>;
 }
 
 export const ChatContainer: React.FC<ChatContainerProps> = ({
@@ -25,74 +71,73 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
   // imageBubbleArray,
   setChatHistory,
   // messageCount,
-  ref
+  chatEndRef
 }) => {
-  // console.log('imageBubbleArray: ', imageBubbleArray);
-  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const agentMessage = (message: string) => {
+    const { before, files, after } = extractCode(message);
 
-  useEffect(() => {
-    // if (messagesEndRef.current) {
-    //   messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    // }
-    // if (shouldAutoScroll === false) {
-    //   return;
-    // }
+    return (
+      <div>
+        <div>{before}</div>
 
-    if (messagesEndRef.current && shouldAutoScroll) {
-      console.log('shouldAutoScroll:', shouldAutoScroll);
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages, messagesEndRef, shouldAutoScroll]);
-
-  // const scrollToBottom = () => {
-  //   // console.log('scrolling...');
-  //   if (shouldAutoScroll === false) {
-  //     console.log('return');
-  //     return;
-  //   }
-  //   if (messagesEndRef.current) {
-  //     messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   setShouldAutoScroll(true);
-  // }, [messageCount]);
-
-  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    const target = event.currentTarget;
-    const isNearBottom =
-      target.scrollHeight - target.scrollTop - target.clientHeight < 100;
-    setShouldAutoScroll(isNearBottom);
+        {files &&
+          files.map((file) =>
+            file.filename ? (
+              <div key={file.filename}>
+                {'\n'}
+                {file.filename}
+                <AceEditor
+                  mode={file.type}
+                  theme='mycustom'
+                  value={file.code}
+                  name='UNIQUE_ID_OF_DIV'
+                  width='100%'
+                  readOnly={true}
+                  showPrintMargin={false}
+                  showGutter={true}
+                  highlightActiveLine={false}
+                  setOptions={{
+                    showLineNumbers: true,
+                    tabSize: 2,
+                    useWorker: false,
+                    highlightGutterLine: false,
+                    wrap: true
+                  }}
+                  wrapEnabled={true}
+                  editorProps={{ $blockScrolling: true }}
+                />
+              </div>
+            ) : null
+          )}
+        <div>{after}</div>
+      </div>
+    );
   };
-
-  useEffect(() => {
-    console.log('shouldAutoScroll: ', shouldAutoScroll);
-  }, [shouldAutoScroll]);
 
   return (
     <div className='flex-1 overflow-y-auto p-4 space-y-4'>
       {messages.map((msg) => (
         <div
-          key={msg.id}
           className={`flex ${
-            msg.role === 'user' ? 'justify-end' : 'justify-start'
+            msg.role === 'user' ? 'justify-end' : 'justify-start w-full'
           }`}>
           <div
-            className={`max-w-[80%] px-4 py-2 rounded-sm ${
+            className={`px-4 py-2 rounded-sm ${
               msg.role === 'user'
-                ? 'bg-neoplay-gray text-white'
-                : 'bg-neoplay-darkGreen bg-opacity-20 border border-neoplay-green text-neoplay-green'
+                ? 'bg-neoplay-gray text-white max-w-[80%]'
+                : 'bg-neoplay-darkGreen bg-opacity-20 border border-neoplay-green text-neoplay-green w-full'
             }`}>
-            <p className='whitespace-pre-wrap'>{msg.content}</p>
+            <p className='whitespace-pre-wrap'>
+              {msg.role === 'user' ? msg.content : agentMessage(msg.content)}
+              {/* <p className='whitespace-pre-wrap'>{msg.content}</p> */}
+            </p>
             <div className='text-xs text-gray-400 mt-1'>
-              {msg.timestamp.toLocaleTimeString()}
+              {/* {msg.timestamp.toLocaleTimeString()} */}
             </div>
           </div>
         </div>
       ))}
-      <div ref={ref} />
+      <div ref={chatEndRef} />
     </div>
   );
 };

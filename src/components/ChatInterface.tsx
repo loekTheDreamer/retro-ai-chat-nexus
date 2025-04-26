@@ -55,53 +55,53 @@ const ChatInterface = () => {
     resizeTextarea();
   }, [input]);
 
-  const handleSendMessage = () => {
-    if (input.trim() === '') return;
+  // const handleSendMessage = () => {
+  //   if (input.trim() === '') return;
 
-    // Add user message
-    const userMessage: ChatMessage = {
-      id: messages.length + 1,
-      sender: 'user',
-      content: input,
-      timestamp: new Date()
-    };
+  //   // Add user message
+  //   const userMessage: ChatMessage = {
+  //     id: chatHistory.length + 1,
+  //     sender: 'user',
+  //     content: input,
+  //     timestamp: new Date()
+  //   };
 
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
+  //   setChatHistory((prev) => [...prev, userMessage]);
+  //   setInput('');
 
-    // Reset textarea height after sending
-    if (textareaRef.current) {
-      textareaRef.current.style.height = '40px';
-    }
+  //   // Reset textarea height after sending
+  //   if (textareaRef.current) {
+  //     textareaRef.current.style.height = '40px';
+  //   }
 
-    // Simulate bot response after a delay
-    setTimeout(() => {
-      const botResponses = [
-        'I can help you create a pixel art platformer game. What theme are you thinking of?',
-        'You might want to consider adding power-ups to your game for extra excitement.',
-        "Your game concept sounds interesting! Let's develop it further.",
-        'I can generate some code for your game mechanics. What specifically do you need?',
-        'Would you like me to suggest some retro-style sound effects for your game?'
-      ];
+  //   // Simulate bot response after a delay
+  //   setTimeout(() => {
+  //     const botResponses = [
+  //       'I can help you create a pixel art platformer game. What theme are you thinking of?',
+  //       'You might want to consider adding power-ups to your game for extra excitement.',
+  //       "Your game concept sounds interesting! Let's develop it further.",
+  //       'I can generate some code for your game mechanics. What specifically do you need?',
+  //       'Would you like me to suggest some retro-style sound effects for your game?'
+  //     ];
 
-      const randomResponse =
-        botResponses[Math.floor(Math.random() * botResponses.length)];
+  //     const randomResponse =
+  //       botResponses[Math.floor(Math.random() * botResponses.length)];
 
-      const botMessage: ChatMessage = {
-        id: messages.length + 2,
-        sender: 'bot',
-        content: randomResponse,
-        timestamp: new Date()
-      };
+  //     const botMessage: ChatMessage = {
+  //       id: messages.length + 2,
+  //       sender: 'bot',
+  //       content: randomResponse,
+  //       timestamp: new Date()
+  //     };
 
-      setMessages((prev) => [...prev, botMessage]);
-    }, 1000);
-  };
+  //     setMessages((prev) => [...prev, botMessage]);
+  //   }, 1000);
+  // };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      xaiMessageStream();
     }
   };
 
@@ -114,7 +114,7 @@ const ChatInterface = () => {
         // imageBubbleArray={imageBubbleArray}
         setChatHistory={setChatHistory}
         // messageCount={messageCount}
-        ref={chatEndRef}
+        chatEndRef={chatEndRef}
       />
       {/* <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
@@ -144,8 +144,11 @@ const ChatInterface = () => {
         <div className='relative flex items-center'>
           <Textarea
             ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
+            value={inputValue}
+            onChange={(e) => {
+              console.log(e.target.value);
+              setInputValue(e.target.value);
+            }}
             onKeyDown={handleKeyDown}
             placeholder='Type your message...'
             className='retro-input w-full pr-10 resize-none min-h-[40px] max-h-[60px] overflow-auto'
@@ -153,7 +156,7 @@ const ChatInterface = () => {
           />
           <button
             onClick={xaiMessageStream}
-            disabled={input.trim() === ''}
+            disabled={inputValue.trim() === ''}
             className='absolute right-2 top-1/2 -translate-y-1/2 p-2 text-neoplay-green hover:text-neoplay-darkGreen disabled:opacity-50'>
             <Send size={20} />
           </button>

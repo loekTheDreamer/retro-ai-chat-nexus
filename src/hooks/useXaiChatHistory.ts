@@ -26,6 +26,7 @@ const useXaiChatHistory = () => {
 
   const xaiMessageStream = () => {
     // console.log('anthropic Message Stream');
+    console.log('inputValue: ', inputValue);
     const input = inputValue.trim();
     if (!input) return;
     // setError(undefined);
