@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Send } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
@@ -126,7 +125,6 @@ gameLoop();`
 
   return (
     <div className="h-full flex flex-col">
-      {/* Chat messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
           <div
@@ -137,13 +135,11 @@ gameLoop();`
               className={`max-w-[80%] px-4 py-2 rounded-sm ${
                 msg.sender === "user"
                   ? "bg-neoplay-gray text-white"
-                  : msg.isCode
-                  ? "bg-[#1A1F2C] text-[#C8C8C9] font-mono"
                   : "bg-neoplay-darkGreen bg-opacity-20 border border-neoplay-green text-neoplay-green"
               }`}
             >
               {msg.isCode ? (
-                <pre className="whitespace-pre-wrap overflow-x-auto p-2">
+                <pre className="whitespace-pre-wrap overflow-x-auto p-2 bg-black/20 rounded border border-neoplay-green/30 font-mono text-sm">
                   <code>{msg.content}</code>
                 </pre>
               ) : (
