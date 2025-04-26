@@ -33,8 +33,8 @@ const ChatInterface = () => {
     if (textarea) {
       textarea.style.height = "40px"; // Reset height to calculate correctly
       const scrollHeight = textarea.scrollHeight;
-      // Limit height to approximately 4 rows (~120px)
-      textarea.style.height = `${Math.min(scrollHeight, 120)}px`;
+      // Limit height to approximately 2 rows (~60px)
+      textarea.style.height = `${Math.min(scrollHeight, 60)}px`;
     }
   };
 
@@ -126,7 +126,7 @@ const ChatInterface = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type your message..."
-            className="retro-input w-full pr-10 resize-none min-h-[40px] max-h-[120px] overflow-auto"
+            className="retro-input w-full pr-10 resize-none min-h-[40px] max-h-[60px] overflow-auto"
             style={{ height: "40px" }}
           />
           <button
