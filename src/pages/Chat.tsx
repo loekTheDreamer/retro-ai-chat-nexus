@@ -6,6 +6,7 @@ import ChatInterface from '../components/ChatInterface';
 import LeftPanel from '../components/LeftPanel';
 import RightPanel from '../components/RightPanel';
 import PublishedGames from '../components/PublishedGames';
+import { useDisconnect } from 'wagmi';
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const Chat = () => {
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [showGames, setShowGames] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const { disconnect } = useDisconnect();
 
   const toggleLeftPanel = () => {
     setLeftPanelOpen(!leftPanelOpen);
@@ -29,6 +31,7 @@ const Chat = () => {
 
   const handleLogout = () => {
     toast.success('Logged out successfully');
+    disconnect();
     navigate('/');
   };
 

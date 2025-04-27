@@ -36,13 +36,10 @@ const WalletModal = ({ isOpen, onClose, onWalletSelect }: WalletModalProps) => {
         <div className='grid gap-4 py-4'>
           {connectors.map((connector) => (
             <Button
-              // key={connector.name}
-              onClick={() => onWalletSelect(connector.name)}
+              key={connector.id}
+              onClick={() => connect({ connector })}
               className='retro-btn flex items-center justify-start gap-2 w-full'>
-              <WalletOption
-                connector={connector}
-                onClick={() => connect({ connector })}
-              />
+              <WalletOption connector={connector} />
             </Button>
           ))}
         </div>
@@ -54,11 +51,9 @@ const WalletModal = ({ isOpen, onClose, onWalletSelect }: WalletModalProps) => {
 export default WalletModal;
 
 function WalletOption({
-  connector,
-  onClick
+  connector
 }: {
   connector: Connector;
-  onClick: () => void;
 }) {
   const [ready, setReady] = useState(false);
 
@@ -70,12 +65,9 @@ function WalletOption({
   }, [connector]);
 
   return (
-    <button
-      disabled={!ready}
-      onClick={onClick}
-      className='flex items-center gap-2'>
+    <div className='flex items-center gap-2'>
       <Wallet className='w-5 h-5' />
       {connector.name}
-    </button>
+    </div>
   );
 }
