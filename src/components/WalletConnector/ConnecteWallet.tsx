@@ -1,5 +1,5 @@
 import App from '@/App';
-import { WalletOptions } from './wallet-options';
+import { WalletOptions } from './walletOptions';
 import { useAccount, useDisconnect, useSignMessage } from 'wagmi';
 import { authNonce, authLogin } from '@/api/db';
 import { useState, useEffect, useRef } from 'react';
