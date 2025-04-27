@@ -99,7 +99,14 @@ const Chat = () => {
         <LeftPanel isOpen={leftPanelOpen} />
 
         {/* Main chat area */}
-        <main className='flex-1 overflow-hidden flex justify-center'>
+        <main
+          className='flex-1 overflow-hidden flex justify-center'
+          onWheel={(e) => {
+            const chatContainer = document.querySelector('.chat-container');
+            if (chatContainer) {
+              chatContainer.scrollTop += e.deltaY;
+            }
+          }}>
           {showGames ? <PublishedGames /> : <ChatInterface />}
         </main>
 
