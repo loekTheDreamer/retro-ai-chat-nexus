@@ -28,9 +28,10 @@ export default {
             '--tw-prose-links': theme('colors.neoplay.green'),
             '--tw-prose-bold': theme('colors.neoplay.green'),
             '--tw-prose-bullets': theme('colors.neoplay.green'),
+            '--tw-prose-counters': theme('colors.neoplay.green'),
             '--tw-prose-quotes': theme('colors.neoplay.green'),
             '--tw-prose-code': theme('colors.neoplay.green'),
-            '--tw-prose-pre-bg': theme('colors.neoplay.black'),
+            '--tw-prose-pre-bg': theme('colors.neoplay.green'),
             '--tw-prose-pre-border': theme('colors.neoplay.green'),
             '--tw-prose-hr': theme('colors.neoplay.green'),
             fontSize: '0.875rem', // 14px (Tailwind's text-sm)

@@ -177,6 +177,7 @@ export const AgentBubble: React.FC<AgentBubbleProps> = ({
                   highlightGutterLine: false,
                   wrap: true
                 }}
+                height='300px'
                 wrapEnabled={true}
                 // editorProps={{ $blockScrolling: true }}
               />
