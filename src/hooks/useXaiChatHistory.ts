@@ -12,7 +12,6 @@ const useXaiChatHistory = () => {
   const [imageBubbleArray, setImageBubbleArray] = useState<[]>([]);
 
   const { address } = useAccount();
-  console.log('address: ', address);
   const [inputValue, setInputValue] = useState('');
   const [prompted, setPrompted] = useState(false);
 
@@ -22,8 +21,6 @@ const useXaiChatHistory = () => {
   // const { setError } = useErrorDetectedStore();
 
   const xaiMessageStream = () => {
-    // console.log('anthropic Message Stream');
-    console.log('inputValue: ', inputValue);
     const input = inputValue.trim();
     if (!input) return;
     // setError(undefined);

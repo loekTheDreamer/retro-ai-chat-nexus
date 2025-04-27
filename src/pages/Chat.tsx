@@ -99,7 +99,7 @@ const Chat = () => {
         <LeftPanel isOpen={leftPanelOpen} />
 
         {/* Main chat area */}
-        <main className='flex-1 overflow-hidden'>
+        <main className='flex-1 overflow-hidden flex justify-center'>
           {showGames ? <PublishedGames /> : <ChatInterface />}
         </main>
 

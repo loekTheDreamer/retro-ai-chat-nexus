@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-// import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from 'react-markdown';
 
 import AceEditor from 'react-ace';
 import ace from 'ace-builds/src-noconflict/ace';
@@ -150,7 +150,9 @@ export const AgentBubble: React.FC<AgentBubbleProps> = ({
 
   return (
     <div>
-      <div>{beforeCode}</div>
+      <div className='prose prose-invert'>
+        <ReactMarkdown>{beforeCode}</ReactMarkdown>
+      </div>
 
       {files &&
         files.map((file) =>
@@ -176,12 +178,14 @@ export const AgentBubble: React.FC<AgentBubbleProps> = ({
                   wrap: true
                 }}
                 wrapEnabled={true}
-                editorProps={{ $blockScrolling: true }}
+                // editorProps={{ $blockScrolling: true }}
               />
             </div>
           ) : null
         )}
-      <div>{afterCode}</div>
+      <div className='prose prose-invert'>
+        <ReactMarkdown>{afterCode}</ReactMarkdown>
+      </div>
     </div>
   );
 };

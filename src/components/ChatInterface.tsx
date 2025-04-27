@@ -55,7 +55,7 @@ const ChatInterface = () => {
   };
 
   return (
-    <div className='h-full flex flex-col'>
+    <div className='h-full flex flex-col w-2/3 mx-auto min-w-[320px] max-w-4xl'>
       {/* Chat messages */}
       <ChatContainer
         messages={chatHistory}
@@ -67,13 +67,12 @@ const ChatInterface = () => {
       />
 
       {/* Input area */}
-      <div className='border-t-2 border-neoplay-green p-4'>
+      <div className='p-4'>
         <div className='relative flex items-center'>
           <Textarea
             ref={textareaRef}
             value={inputValue}
             onChange={(e) => {
-              console.log(e.target.value);
               setInputValue(e.target.value);
             }}
             onKeyDown={handleKeyDown}
