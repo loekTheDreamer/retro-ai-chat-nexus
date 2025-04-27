@@ -15,7 +15,7 @@ const useXaiChatHistory = () => {
   const [imageBubbleArray, setImageBubbleArray] = useState<[]>([]);
 
   const { address } = useAccount();
-
+  console.log('address: ', address);
   const [inputValue, setInputValue] = useState('');
   const [prompted, setPrompted] = useState(false);
 

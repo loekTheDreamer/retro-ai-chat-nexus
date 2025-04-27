@@ -1,28 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, VStack } from '@chakra-ui/react';
-import ReactMarkdown from 'react-markdown';
+// import ReactMarkdown from 'react-markdown';
 
 import AceEditor from 'react-ace';
-import ace from 'ace-builds';
+import ace from 'ace-builds/src-noconflict/ace';
 
 // Import necessary Ace Editor modules
 import 'ace-builds/src-noconflict/mode-html';
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/mode-typescript';
 import 'ace-builds/src-noconflict/mode-tsx';
-import 'ace-builds/src-noconflict/theme-dracula';
 import 'ace-builds/src-noconflict/ext-language_tools';
 
-import { ImageBubble } from './ImageBubble';
-import useErrorDetectedStore from '@/stores/useErrorDetectedStore';
-import { Message } from '@/api/api';
-import { ErrorFoundBubble } from './ErrorFoundBubble';
-import { DevErrorBubble } from './DevErrorBubble';
-import { extractCode, parseChatCode } from '@/utils/fileParser';
-import Editor from '@monaco-editor/react';
-import classNames from 'classnames';
-import useChatStore from '@/stores/useChatStore';
-import useCurrentGameState from '@/stores/useCurrentGameState';
+import { Message } from '@/types/message';
+import { extractCode } from '@/utils/fileParser';
+
+import useCurrentGameState from '@/store/useCurrentGameState';
+import useChatStore from '@/store/useChatStore';
 
 // import { parseContentChat } from '@/utils/htmlParser';
 interface AgentBubbleProps {
@@ -37,6 +30,47 @@ interface AgentBubbleProps {
   messageCount: number;
 }
 
+ace.define(
+  'ace/theme/mycustom',
+  ['require', 'exports', 'module', 'ace/lib/dom'],
+  function (require, exports, module) {
+    exports.isDark = true;
+    exports.cssClass = 'ace-mycustom';
+    exports.cssText = `
+    .ace-mycustom .ace_gutter {
+      background: #102b13 !important;
+      color: #4AFF00 !important;
+      border-right: 1px solid #4AFF00 !important;
+    }
+    .ace-mycustom {
+      background-color: #102b13 !important;
+      color: #4AFF00 !important;
+      border: 1px solid #4AFF00;
+      font-family: 'Fira Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+      font-size: 0.95rem;
+    }
+    .ace-mycustom .ace_cursor {
+      color: #4AFF00 !important;
+    }
+    .ace-mycustom .ace_print-margin {
+      display: none !important;
+    }
+    .ace-mycustom .ace_marker-layer,
+    .ace-mycustom .ace_active-line {
+      background: none !important;
+    }
+    .ace-mycustom .ace_gutter-active-line {
+      background-color: #102b13 !important;
+    }
+    .ace-mycustom .ace_line {
+      color: #4AFF00 !important;
+    }
+    `;
+    const dom = require('../lib/dom');
+    dom.importCssString(exports.cssText, exports.cssClass);
+  }
+);
+
 export const AgentBubble: React.FC<AgentBubbleProps> = ({
   content,
   commentError,
@@ -46,7 +80,6 @@ export const AgentBubble: React.FC<AgentBubbleProps> = ({
   showDevError,
   messageCount
 }) => {
-  const { errorMessage, setError, setHasError } = useErrorDetectedStore();
   const [beforeCode, setBeforeCode] = useState('');
   const [code, setCode] = useState<string | null>(null);
   interface FileType {
@@ -73,20 +106,11 @@ export const AgentBubble: React.FC<AgentBubbleProps> = ({
     const { before, files, after } = extractCode(content);
 
     setBeforeCode(before);
-
+    console.log('files:', files);
     setFiles(files);
     setGameFiles(files);
     setAfterCode(after);
-  }, [
-    commentError,
-    setGameFiles,
-    setFiles,
-    content,
-    errorMessage,
-    setChatHistory,
-    setError,
-    setHasError
-  ]);
+  }, [commentError, setGameFiles, setFiles, content, setChatHistory]);
   // console.log('shouldAutoScroll: ', shouldAutoScroll);
   const editorRef = useRef<AceEditor>(null);
 
@@ -120,198 +144,44 @@ export const AgentBubble: React.FC<AgentBubbleProps> = ({
     }
   };
 
-  if (showDevError) {
-    return <DevErrorBubble />;
-  }
+  // if (showDevError) {
+  //   return <DevErrorBubble />;
+  // }
 
   return (
-    <Box
-      // p='4'
-      width='full'
-      bg='white'
-      _dark={{ bg: 'transparent' }}
-      borderRadius='md'>
-      <VStack align='stretch' gap={4}>
-        {iframeErrorState && (
-          <ErrorFoundBubble
-            message='Error found in game code:'
-            errorState={iframeErrorState}
-          />
+    <div>
+      <div>{beforeCode}</div>
+
+      {files &&
+        files.map((file) =>
+          file.filename ? (
+            <div key={file.filename}>
+              {'\n'}
+              {file.filename}
+              <AceEditor
+                mode={file.type}
+                theme='mycustom'
+                value={file.code}
+                name='UNIQUE_ID_OF_DIV'
+                width='100%'
+                readOnly={true}
+                showPrintMargin={false}
+                showGutter={true}
+                highlightActiveLine={false}
+                setOptions={{
+                  showLineNumbers: true,
+                  tabSize: 2,
+                  useWorker: false,
+                  highlightGutterLine: false,
+                  wrap: true
+                }}
+                wrapEnabled={true}
+                editorProps={{ $blockScrolling: true }}
+              />
+            </div>
+          ) : null
         )}
-        {beforeCode && (
-          <Box>
-            <ReactMarkdown>{beforeCode}</ReactMarkdown>
-          </Box>
-        )}
-        {/* <Box> */}
-
-        {/* <ReactMarkdown>{content}</ReactMarkdown> */}
-        {/* <Text whiteSpace='pre-wrap'>{content}</Text> */}
-        {/* </Box> */}
-        {codeCreationError && (
-          <ErrorFoundBubble
-            message='Error found in code creation:'
-            errorState={codeCreationError}
-          />
-        )}
-        {files &&
-          files.map((file) =>
-            file.filename ? (
-              <Box key={file.filename}>
-                <ReactMarkdown>{file.filename}</ReactMarkdown>
-                <AceEditor
-                  ref={editorRef}
-                  onScroll={handleScroll}
-                  mode={file.type}
-                  theme='dracula'
-                  value={file.code}
-                  name='UNIQUE_ID_OF_DIV'
-                  width='100%'
-                  height='300px'
-                  fontSize={14}
-                  readOnly={true}
-                  showPrintMargin={false}
-                  showGutter={true}
-                  highlightActiveLine={false}
-                  setOptions={{
-                    showLineNumbers: true,
-                    tabSize: 2,
-                    useWorker: false,
-                    highlightGutterLine: false,
-                    wrap: true
-                  }}
-                  wrapEnabled={true}
-                  // minLines={3}
-                  // maxLines={15}
-                  style={{
-                    borderRadius: '8px',
-                    border: '1px solid',
-                    borderColor: 'gray.600',
-                    cursor: 'default',
-                    overflow: 'auto'
-                  }}
-                  editorProps={{ $blockScrolling: true }}
-                />
-              </Box>
-            ) : null
-          )}
-
-        {/* {files &&
-          files.map((file) =>
-            file.filename ? (
-              <Box key={file.filename}>
-                <ReactMarkdown>{file.filename}</ReactMarkdown>
-                <Editor
-                  // language={
-                  //   file.filename.endsWith('.javascript')
-                  //     ? 'javascript'
-                  //     : 'html'
-                  // }
-                  language={file.type}
-                  theme='vs-dark'
-                  height='200px'
-                  className={classNames(
-                    'h-[calc(100dvh-90px)] lg:h-[calc(100dvh-96px)]',
-                    {
-                      'pointer-events-none': isLoading
-                    }
-                  )}
-                  defaultLanguage='javascript'
-                  // defaultValue={test}
-                  value={file.code}
-                  // onChange={(value) => {
-                  //   const newValue = value ?? '';
-                  //   setCode(newValue);
-                  //   // setError(false);
-                  // }}
-                />
-              </Box>
-            ) : null
-          )} */}
-
-        {/* {code && (
-          <Editor
-            language='html'
-            theme='vs-dark'
-            height='300px'
-            // className={classNames(
-            //   'h-[calc(100dvh-90px)] lg:h-[calc(100dvh-96px)]',
-            //   {
-            //     'pointer-events-none': isLoading
-            //   }
-            // )}
-            defaultLanguage='javascript'
-            // defaultValue={test}
-            value={code}
-            onChange={(value) => {
-              const newValue = value ?? '';
-              setCode(newValue);
-              // setError(false);
-            }}
-          />
-        )} */}
-
-        {/* {code && (
-          <AceEditor
-            ref={editorRef}
-            onScroll={handleScroll}
-            mode='typescript'
-            theme='dracula'
-            value={code}
-            name='UNIQUE_ID_OF_DIV'
-            width='100%'
-            height='300px'
-            fontSize={14}
-            readOnly={true}
-            showPrintMargin={false}
-            showGutter={true}
-            highlightActiveLine={false}
-            setOptions={{
-              showLineNumbers: true,
-              tabSize: 2,
-              useWorker: false,
-              highlightGutterLine: false,
-              wrap: true
-            }}
-            wrapEnabled={true}
-            // minLines={3}
-            // maxLines={15}
-            style={{
-              borderRadius: '8px',
-              border: '1px solid',
-              borderColor: 'gray.600',
-              cursor: 'default',
-              overflow: 'auto'
-            }}
-            editorProps={{ $blockScrolling: true }}
-          />
-        )} */}
-
-        {imageBubble && <ImageBubble content={imageBubble} />}
-
-        {/* {code && (
-          <Box
-            borderRadius='md'
-            overflow='hidden'
-            border='1px'
-            borderColor='gray.200'
-            _focus={{
-              border: 'none',
-              borderColor: 'transparent',
-              boxShadow: 'none',
-              outline: 'none'
-            }}>
-            <SyntaxHighlighter language='html' style={docco}>
-              {code}
-            </SyntaxHighlighter>
-          </Box>
-        )} */}
-        {afterCode && (
-          <Box mt={4}>
-            <ReactMarkdown>{afterCode}</ReactMarkdown>
-          </Box>
-        )}
-      </VStack>
-    </Box>
+      <div>{afterCode}</div>
+    </div>
   );
 };

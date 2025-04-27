@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Message } from '@/types/message';
 import { agentMessage } from '@/helpers/agentMessage';
+import useCurrentGameState, { GameFiles } from '@/store/useCurrentGameState';
+import { AgentBubble } from './AgentBubble';
 
 interface ChatContainerProps {
   messages: Message[];
@@ -37,7 +39,15 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
                 : 'bg-neoplay-darkGreen bg-opacity-20 border border-neoplay-green text-neoplay-green w-full'
             }`}>
             <p className='whitespace-pre-wrap'>
-              {msg.role === 'user' ? msg.content : agentMessage(msg.content)}
+              {msg.role === 'user' ? (
+                msg.content
+              ) : (
+                <AgentBubble
+                  content={msg.content}
+                  setChatHistory={setChatHistory}
+                  messageCount={0}
+                />
+              )}
               {/* <p className='whitespace-pre-wrap'>{msg.content}</p> */}
             </p>
             <div className='text-xs text-gray-400 mt-1'>

@@ -1,5 +1,7 @@
+import useCurrentGameState, { GameFiles } from '@/store/useCurrentGameState';
 import { extractCode } from '@/utils/fileParser';
 import ace from 'ace-builds/src-noconflict/ace';
+import { useEffect } from 'react';
 import AceEditor from 'react-ace';
 // import 'ace-builds/src-noconflict/theme-terminal';
 
@@ -44,9 +46,20 @@ ace.define(
   }
 );
 
-export const agentMessage = (message: string) => {
+export const agentMessage = (
+  message: string,
+  onSetGameFiles: (files: GameFiles[]) => void
+) => {
   const { before, files, after } = extractCode(message);
-
+  // const { setGameFiles } = useCurrentGameState();
+  // setGameFiles(files);
+  // useCurrentGameState.setState({ gameFiles: files });
+  // useEffect(() => {
+  //   useCurrentGameState.setState({ gameFiles: files });
+  // }, [files]);
+  // if (onSetGameFiles && files) {
+  //   onSetGameFiles(files);
+  // }
   return (
     <div>
       <div>{before}</div>
