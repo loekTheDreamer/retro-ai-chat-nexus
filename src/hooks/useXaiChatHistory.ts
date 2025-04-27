@@ -3,15 +3,12 @@ import { xaiStreamEvent } from '@/api/xai';
 import useChatStore from '@/store/useChatStore';
 import useCurrentGameState from '@/store/useCurrentGameState';
 // import useErrorDetectedStore from '@/store/useErrorDetectedStore';
-import { initialPrompt } from '@/prompts/xaiPrompts';
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
 
 const useXaiChatHistory = () => {
   //   const [chatHistory, setChatHistory] = useState<Message[]>([]);
-  const [chatHistory, setChatHistory] = useState<Message[]>([
-    { role: 'system', content: initialPrompt }
-  ]);
+  const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [imageBubbleArray, setImageBubbleArray] = useState<[]>([]);
 
   const { address } = useAccount();

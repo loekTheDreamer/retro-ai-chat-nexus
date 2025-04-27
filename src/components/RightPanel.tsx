@@ -37,7 +37,7 @@ const RightPanel = ({ isOpen }: RightPanelProps) => {
 
   return (
     <div
-      className={`w-80 border-l-2 border-neoplay-green flex flex-col animate-slide-in-right`}>
+      className={`w-[620px] border-l-2 border-neoplay-green flex flex-col animate-slide-in-right`}>
       {/* Tabs */}
       <div className='border-b-2 border-neoplay-green flex'>
         <button
