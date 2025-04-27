@@ -7,26 +7,21 @@ import { AgentBubble } from './AgentBubble';
 
 interface ChatContainerProps {
   messages: Message[];
-
   isLoading?: boolean;
-  // imageBubbleArray: ImageBubbleArray[];
   setChatHistory: (
     newHistory: Message[] | ((prev: Message[]) => Message[])
   ) => void;
-  // messageCount: number;
   chatEndRef: React.RefObject<HTMLDivElement>;
 }
 
 export const ChatContainer: React.FC<ChatContainerProps> = ({
   messages,
   isLoading,
-  // imageBubbleArray,
   setChatHistory,
-  // messageCount,
   chatEndRef
 }) => {
   return (
-    <div className="flex-1 overflow-y-auto p-6 chat-container space-y-4">
+    <div className='flex-1 overflow-y-auto p-6 chat-container space-y-4'>
       {messages.map((msg) => (
         <div
           className={`flex ${
@@ -48,14 +43,32 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
                   messageCount={0}
                 />
               )}
-              {/* <p className='whitespace-pre-wrap'>{msg.content}</p> */}
             </p>
-            <div className='text-xs text-gray-400 mt-1'>
-              {/* {msg.timestamp.toLocaleTimeString()} */}
-            </div>
+
+            <div className='text-xs text-gray-400 mt-1'></div>
           </div>
         </div>
       ))}
+      {isLoading && (
+        <div className='flex justify-start w-full' aria-label='Loading'>
+          <svg
+            className='animate-spin h-5 w-5 neoplay-green'
+            style={{ animationDuration: '0.3s' }}
+            viewBox='0 0 48 48'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'>
+            <rect
+              x='8'
+              y='8'
+              width='32'
+              height='32'
+              stroke='currentColor'
+              strokeWidth='4'
+              fill='none'
+            />
+          </svg>
+        </div>
+      )}
       <div ref={chatEndRef} />
     </div>
   );
