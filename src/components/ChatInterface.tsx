@@ -55,7 +55,7 @@ const ChatInterface = () => {
   };
 
   return (
-    <div className='h-full flex flex-col w-2/3 mx-auto min-w-[320px] max-w-4xl'>
+    <div className='flex-1 flex flex-col max-w-[52vw] min-w-[320px] mx-auto'>
       {/* Chat messages */}
       <ChatContainer
         messages={chatHistory}
