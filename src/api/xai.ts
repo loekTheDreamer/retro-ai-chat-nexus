@@ -1,9 +1,10 @@
 import useAuthStore from '@/store/useAuthStore';
 import { Message } from '@/types/message';
+import useChatStore from '@/store/useChatStore';
 
 interface xaiChatRequest {
   chatHistory: Message[];
-  threadId: string;
+
   onMessage: (content: string) => void;
   onDone: () => void;
 }
@@ -15,12 +16,13 @@ let currentEventSource: EventSource | null = null; // Keep track of the current 
 
 export const xaiStreamEvent = async ({
   chatHistory,
-  threadId,
+
   onMessage,
   onDone
 }: xaiChatRequest) => {
   console.log('anthropic stream Event');
   const token = useAuthStore.getState().token;
+  const threadId = useChatStore.getState().threadId;
 
   // Close any existing EventSource connection
   if (currentEventSource) {

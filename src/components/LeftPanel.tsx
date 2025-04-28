@@ -3,11 +3,13 @@ import { ChevronDown, Plus, Pencil } from 'lucide-react';
 import { getUserGamesApi, updateGameNameApi } from '@/api/commonApi';
 import useAuthStore from '@/store/useAuthStore';
 import RenameGameModal from './RenameGameModal';
+import useChatStore from '@/store/useChatStore';
 
-interface Game {
+interface GamesList {
+  createdAt: string;
   id: string;
   name: string;
-  threads: Thread[];
+  status: string;
 }
 
 interface Message {
@@ -29,12 +31,13 @@ interface LeftPanelProps {
 }
 
 const LeftPanel = ({ isOpen }: LeftPanelProps) => {
-  const [games, setGames] = useState<Game[]>([]);
+  const [games, setGames] = useState<GamesList[]>([]);
   const [isGameModalOpen, setIsGameModalOpen] = useState(false);
   const [updatedGameName, setUpdatedGameName] = useState('');
   const [gameIdToUpdate, setGameIdToUpdate] = useState('');
 
   const { token } = useAuthStore();
+  const { setThreadId } = useChatStore();
 
   const [expandedGames, setExpandedGames] = useState<Record<string, boolean>>({
     '1': true,
@@ -80,12 +83,14 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
 
   useEffect(() => {
     const getGames = async () => {
-      const games = await getUserGamesApi(token);
-      console.log('games:', games);
-      setGames(games);
+      const { latestGame, gameList } = await getUserGamesApi(token);
+      console.log('latestGame:', latestGame);
+      console.log('gameList:', gameList);
+      setGames(gameList);
+      setThreadId(latestGame.threads[0].id); // need to return the last game on with but also a list of the games
     };
     getGames();
-  }, [token]);
+  }, [setThreadId, token]);
 
   const handleGameRename = (newName: string) => {
     // setUpdatedGameName(newName);
@@ -143,7 +148,8 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
 
               {expandedGames[game.id] && (
                 <div className='pl-4 border-t border-neoplay-green'>
-                  {game.threads.map((thread) => (
+                  {/* TODO: send the first message from the thread */}
+                  {games.map((thread) => (
                     <button
                       key={thread.id}
                       className='w-full text-left p-2 text-xs hover:bg-neoplay-gray border-b border-neoplay-green last:border-b-0'>

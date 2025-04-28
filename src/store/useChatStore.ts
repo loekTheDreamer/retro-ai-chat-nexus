@@ -3,14 +3,15 @@ import { persist } from 'zustand/middleware';
 import { Message } from '@/types/message';
 
 interface ChatState {
-  threadId: string;
   chatHistory: Message[];
+  threadId: string;
   isLoading: boolean;
   updateIdForGamePreview: number;
   addMessage: (message: Message) => void;
   setLoading: (loading: boolean) => void;
   clearMessages: () => void;
   updateLastAssistantMessage: (content: string) => void;
+  setThreadId: (threadId: string) => void;
 }
 
 const useChatStore = create<ChatState>()(
@@ -40,7 +41,8 @@ const useChatStore = create<ChatState>()(
           };
           return { chatHistory: newHistory };
         });
-      }
+      },
+      setThreadId: (threadId) => set({ threadId })
     }),
     {
       name: 'chat-storage', // unique name
