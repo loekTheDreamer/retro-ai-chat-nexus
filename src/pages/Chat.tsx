@@ -20,7 +20,7 @@ const Chat = () => {
   const [showGames, setShowGames] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   // const { disconnect } = useDisconnect();
-  const { setAuth } = useAuthStore();
+  const { setAuth, address } = useAuthStore();
 
   // const { connector } = getAccount(config);
 
@@ -77,9 +77,7 @@ const Chat = () => {
             {userMenuOpen && (
               <div className='absolute right-0 mt-2 w-48 pixel-borders bg-neoplay-black z-50'>
                 <div className='p-2 border-b border-neoplay-green'>
-                  <p className='font-mono text-xs truncate'>
-                    USER: 0x1a2b...3c4d
-                  </p>
+                  <p className='font-mono text-xs truncate'>USER: 0x{address.slice(2, 6)}...{address.slice(-4)}</p>
                 </div>
                 <button
                   onClick={handleLogout}

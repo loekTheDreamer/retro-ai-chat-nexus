@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,10 +12,17 @@ export function PublishTab() {
     name: '',
     genre: '',
     description: '',
-    tags: ''
+    tags: '',
+    coverImage: ''
   });
 
   const { screenshotData } = useCurrentGameState();
+
+  useEffect(() => {
+    if (screenshotData) {
+      setFormData((prev) => ({ ...prev, coverImage: screenshotData }));
+    }
+  }, [screenshotData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -30,20 +37,21 @@ export function PublishTab() {
       !formData.name ||
       !formData.genre ||
       !formData.description ||
-      !screenshotData
+      !formData.coverImage
     ) {
       console.error('Please fill in all fields and capture a screenshot');
       return;
     }
 
     try {
-      console.log('Form submitted:', formData, screenshotData);
+      console.log('Form submitted:', formData);
       // Reset form after submission
       setFormData({
         name: '',
         genre: '',
         description: '',
-        tags: ''
+        tags: '',
+        coverImage: ''
       });
     } catch (error) {
       console.error('Failed to submit form');
@@ -74,7 +82,7 @@ export function PublishTab() {
                 autoComplete='off'
               />
             </div>
-            <div className='grid gap-2'>
+            <div className='grid gap-2 text-neoplay-green'>
               <Label htmlFor='genre'>Genre</Label>
               <Input
                 id='genre'
@@ -104,10 +112,10 @@ export function PublishTab() {
               <div className='grid gap-2 text-neoplay-green'>
                 <Label htmlFor='description'>Cover Image</Label>
               </div>
-              {screenshotData ? (
+              {formData.coverImage ? (
                 <div className='mt-2'>
                   <img
-                    src={screenshotData}
+                    src={formData.coverImage}
                     alt='Screenshot Preview'
                     className='max-w-xs max-h-48 object-contain'
                   />
