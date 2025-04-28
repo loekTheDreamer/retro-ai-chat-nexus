@@ -24,7 +24,10 @@ const useChatStore = create<ChatState>()(
         }));
       },
       setLoading: (loading) => set({ isLoading: loading }),
-      clearMessages: () => set({ chatHistory: [] }),
+      clearMessages: () => {
+        console.log('clear messages');
+        set({ chatHistory: [] });
+      },
       updateLastAssistantMessage: (content) => {
         set((state) => {
           const newHistory = [...state.chatHistory];

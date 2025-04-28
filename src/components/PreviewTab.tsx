@@ -1,3 +1,4 @@
+import useAuthStore from '@/store/useAuthStore';
 import useCurrentGameState from '@/store/useCurrentGameState';
 import { useIframeErrorStore } from '@/store/useIframeErrorStore';
 
@@ -21,7 +22,8 @@ export const PreviewTab: React.FC = () => {
 
   const { tempId } = useCurrentGameState();
 
-  const { address } = useAccount();
+  // const { address } = useAccount();
+  const { address } = useAuthStore();
   const [currentGameURL, setCurrentGameURL] = useState<string>();
 
   const { iframeError, setIframeError } = useIframeErrorStore();

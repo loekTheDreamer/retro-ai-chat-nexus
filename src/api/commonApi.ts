@@ -16,12 +16,12 @@ interface PublishGame {
 
 interface SaveFilesToDisk {
   gameFiles: GameFiles[];
-  address: string;
+  token: string;
 }
 
 export const saveFilesToDiskApi = async ({
   gameFiles,
-  address
+  token
 }: SaveFilesToDisk) => {
   // Find the file with filename 'index.html'
 
@@ -91,17 +91,23 @@ export const saveFilesToDiskApi = async ({
   // Use updatedGameFiles in the request below
   console.log('gameFiles', updatedGameFiles);
   console.log('sending files to server');
-  console.log('address:', address);
-  // const gameFiles = get().gameFiles;
 
   try {
     const response = await fetch(`${baseURL}/save`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        authorization: 'Bearer ' + token
       },
-      body: JSON.stringify({ gameFiles: updatedGameFiles, address })
+      body: JSON.stringify({ gameFiles: updatedGameFiles })
     });
+
+    if (response.status === 401) {
+      console.log('Unauthorized!!!');
+      return 'Unauthorized';
+      // throw new Error('Unauthorized');
+    }
+
     if (!response.ok) {
       throw new Error('Failed to save files');
     }

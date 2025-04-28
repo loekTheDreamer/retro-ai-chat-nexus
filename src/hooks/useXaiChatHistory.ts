@@ -8,6 +8,8 @@ import { useAccount } from 'wagmi';
 import { v4 as uuidv4 } from 'uuid';
 import useAuthStore from '@/store/useAuthStore';
 import { toast } from 'sonner';
+import { logoutUnauthorized } from '@/helpers/logout';
+import { useNavigate } from 'react-router-dom';
 
 const useXaiChatHistory = () => {
   //   const [chatHistory, setChatHistory] = useState<Message[]>([]);
@@ -17,7 +19,9 @@ const useXaiChatHistory = () => {
   // const { address } = useAccount();
   const [inputValue, setInputValue] = useState('');
   const [prompted, setPrompted] = useState(false);
-  const { address } = useAuthStore();
+  const { token, address } = useAuthStore();
+
+  const navigate = useNavigate();
 
   const {
     isLoading,
@@ -82,12 +86,13 @@ const useXaiChatHistory = () => {
         onDone: () => {
           setLoading(false);
 
-          if (!address) {
-            console.error('No address provided');
-            toast.error('no address provided');
-            return;
-          }
-          saveFilesToDisk(address);
+          // if (!address) {
+          //   console.error('No address provided');
+          //   toast.error('no address provided');
+          //   return;
+          // }
+
+          saveFilesToDisk(token, navigate);
         }
       });
     } catch (error) {

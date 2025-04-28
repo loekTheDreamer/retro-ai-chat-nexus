@@ -10,3 +10,9 @@ export const logout = async (navigate: NavigateFunction) => {
   navigate('/');
   toast.success('Logged out successfully');
 };
+export const logoutUnauthorized = async (navigate: NavigateFunction) => {
+  await disconnect(config);
+  useAuthStore.setState({ token: '', address: '' });
+  navigate('/');
+  toast.error('Unauthorized');
+};

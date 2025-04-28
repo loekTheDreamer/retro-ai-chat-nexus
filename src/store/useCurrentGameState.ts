@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { publishGameApi, saveFilesToDiskApi } from '@/api/commonApi';
 import { useIframeErrorStore } from '@/store/useIframeErrorStore';
+import { NavigateFunction } from 'react-router-dom';
+import { logoutUnauthorized } from '@/helpers/logout';
 
 export interface GameFiles {
   filename: string;
@@ -18,7 +20,7 @@ interface CurrentGameState {
   currentGameId: string;
   setGameFiles: (files: GameFiles[]) => void;
   updateGameFiles: (files: GameFiles[]) => void;
-  saveFilesToDisk: (address: string) => void;
+  saveFilesToDisk: (address: string, navigate: NavigateFunction) => void;
   tempId: number;
   deleteGame: (address?: string) => void;
   publishGame: ({ address, title }: PublishGame) => void;
@@ -35,7 +37,7 @@ const useCurrentGameState = create<CurrentGameState>((set, get) => ({
     set((state) => ({
       gameFiles: [...state.gameFiles, ...files]
     })),
-  saveFilesToDisk: async (address: string) => {
+  saveFilesToDisk: async (token: string, navigate: NavigateFunction) => {
     console.log('sending files to server');
     const gameFiles = get().gameFiles;
     if (!gameFiles.length) {
@@ -45,13 +47,19 @@ const useCurrentGameState = create<CurrentGameState>((set, get) => ({
 
     const result = await saveFilesToDiskApi({
       gameFiles,
-      address
+      token
     });
     if (!result) {
       return;
     }
+
+    if (result === 'Unauthorized') {
+      logoutUnauthorized(navigate);
+    }
+
     set({ tempId: get().tempId + 1 });
     useIframeErrorStore.getState().resetIframeError();
+    return true;
   },
   deleteGame: async (address?: string) => {
     console.log('deleting game', address);
