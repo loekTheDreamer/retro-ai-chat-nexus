@@ -31,8 +31,11 @@ interface AuthLoginParams {
   signature: string;
 }
 
-export const authLogin = async ({ address, signature }: AuthLoginParams) => {
-  console.log('authLogin:', { address, signature });
+export const authLogin = async ({
+  address: walletAddress,
+  signature
+}: AuthLoginParams) => {
+  console.log('authLogin:', { walletAddress, signature });
   console.log('what the hell');
   try {
     const response = await fetch(`${baseURL}/auth/login`, {
@@ -40,12 +43,18 @@ export const authLogin = async ({ address, signature }: AuthLoginParams) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ address, signature })
+      body: JSON.stringify({ address: walletAddress, signature })
     });
     if (!response.ok) {
       throw new Error('Failed to login');
     }
-    return response.status;
+    const parsedResponse = await response.json();
+
+    const { token, address } = parsedResponse;
+    console.log('token:', token);
+    console.log('returnedAddress:', address);
+
+    return { token, address };
   } catch (error) {
     console.error('Error logging in:', error);
     throw error;

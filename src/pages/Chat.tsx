@@ -6,7 +6,12 @@ import ChatInterface from '../components/ChatInterface';
 import LeftPanel from '../components/LeftPanel';
 import RightPanel from '../components/RightPanel';
 import PublishedGames from '../components/PublishedGames';
-import { useDisconnect } from 'wagmi';
+
+import { disconnect } from '@wagmi/core';
+
+import useAuthStore from '@/store/useAuthStore';
+import { config } from '@/components/WalletConnector/config';
+import { logout } from '@/helpers/logout';
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -14,7 +19,10 @@ const Chat = () => {
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [showGames, setShowGames] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const { disconnect } = useDisconnect();
+  // const { disconnect } = useDisconnect();
+  const { setAuth } = useAuthStore();
+
+  // const { connector } = getAccount(config);
 
   const toggleLeftPanel = () => {
     setLeftPanelOpen(!leftPanelOpen);
@@ -29,10 +37,8 @@ const Chat = () => {
     toast.info(showGames ? 'Switched to Chat' : 'Switched to Published Games');
   };
 
-  const handleLogout = () => {
-    toast.success('Logged out successfully');
-    disconnect();
-    navigate('/');
+  const handleLogout = async () => {
+    logout(navigate);
   };
 
   return (

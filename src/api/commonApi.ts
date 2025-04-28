@@ -167,3 +167,22 @@ export const publishGameApi = async ({ address, title, id }: PublishGame) => {
     console.error('Error publishing game:', error);
   }
 };
+
+export const createGameApi = async () => {
+  try {
+    const response = await fetch(`${baseURL}/game`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Authorization: 'Bearer ' + token, // token is your JWT string
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Failed to create game');
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error creating game:', error);
+  }
+};

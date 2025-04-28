@@ -3,13 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import WalletModal from '@/components/WalletModal';
 
-import { useAccount, useDisconnect, useSignMessage } from 'wagmi';
+import { useAccount, useSignMessage } from 'wagmi';
+import { disconnect } from '@wagmi/core';
+
 import { authNonce, authLogin } from '@/api/db';
+import useAuthStore from '@/store/useAuthStore';
+import { config } from '@/components/WalletConnector/config';
 
 const Index = () => {
   const navigate = useNavigate();
   const [isConnecting, setIsConnecting] = useState(false);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+
+  const { token, setAuth } = useAuthStore();
 
   const { isConnected, address } = useAccount();
   const [loginStatus, setLoginStatus] = useState<
@@ -18,9 +24,15 @@ const Index = () => {
   const [responseCode, setResponseCode] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const { signMessageAsync } = useSignMessage();
-  const { disconnect } = useDisconnect();
+  // const { disconnect } = useDisconnect();
 
   const hasLoggedIn = useRef(false);
+
+  useEffect(() => {
+    if (token) {
+      navigate('/chat');
+    }
+  }, [token, navigate]);
 
   useEffect(() => {
     const loginWithWallet = async (walletAddress: string) => {
@@ -41,15 +53,24 @@ const Index = () => {
           message: message
         });
         // Send address and signature to backend
-        const code = await authLogin({ address: walletAddress, signature });
-        setResponseCode(code);
-        if (code === 200) {
-          setIsConnecting(false);
-          setLoginStatus('success');
-          navigate('/chat');
-        } else {
+        const { token: jwtToken, address: returnedAddress } = await authLogin({
+          address: walletAddress,
+          signature
+        });
+        if (!jwtToken || !returnedAddress) {
           throw new Error('Login failed.');
         }
+
+        setAuth(jwtToken, returnedAddress);
+
+        // setResponseCode(code);
+        // if (code === 200) {
+        //   setIsConnecting(false);
+        //   setLoginStatus('success');
+        //   navigate('/chat');
+        // } else {
+        //   throw new Error('Login failed.');
+        // }
       } catch (err) {
         // If the session is corrupted, clean up and force reconnect
         if (
@@ -58,10 +79,8 @@ const Index = () => {
           'message' in err &&
           (err as Error).message.includes('getChainId is not a function')
         ) {
-          await disconnect();
-          Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith('walletconnect')) localStorage.removeItem(key);
-          });
+          await disconnect(config);
+
           setLoginStatus('idle');
           setResponseCode(null);
           setErrorMsg('Your wallet session was corrupted. Please reconnect.');
@@ -71,7 +90,7 @@ const Index = () => {
         // Generic error: disconnect and show error UI
         setLoginStatus('error');
         setErrorMsg((err as Error).message || 'Error logging in.');
-        await disconnect();
+
         hasLoggedIn.current = false;
       }
     };
@@ -93,7 +112,8 @@ const Index = () => {
     signMessageAsync,
     disconnect,
     loginStatus,
-    navigate
+    navigate,
+    setAuth
   ]);
 
   const handleConnect = () => {

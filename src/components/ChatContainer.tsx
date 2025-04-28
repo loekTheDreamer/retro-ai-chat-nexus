@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { Message } from '@/types/message';
-import { agentMessage } from '@/helpers/agentMessage';
-import useCurrentGameState, { GameFiles } from '@/store/useCurrentGameState';
 import { AgentBubble } from './AgentBubble';
 
 interface ChatContainerProps {
