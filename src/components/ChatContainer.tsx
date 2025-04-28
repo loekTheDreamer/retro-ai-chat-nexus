@@ -30,7 +30,7 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
           <div
             className={`px-4 py-2 rounded-sm ${
               msg.role === 'user'
-                ? 'bg-neoplay-gray text-white max-w-[80%]'
+                ? 'bg-neoplay-gray text-white max-w-[80%] pb-1'
                 : 'bg-neoplay-darkGreen bg-opacity-20 border border-neoplay-green text-neoplay-green w-full'
             }`}>
             <div className='whitespace-pre-wrap'>
