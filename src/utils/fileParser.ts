@@ -1,3 +1,9 @@
+// Bug!!!
+// sometimes there is a change the code will be returned as
+// ```
+// filename
+// ```
+// which then breaks the writing of files. i need to figure out how to cater for this.
 export const extractCode = (content: string) => {
   const patterns = {
     html: '```html',
