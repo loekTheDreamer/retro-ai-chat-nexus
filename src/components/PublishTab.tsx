@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import useCurrentGameState from '@/store/useCurrentGameState';
 
 export function PublishTab() {
   const [formData, setFormData] = useState({
@@ -14,10 +15,7 @@ export function PublishTab() {
     tags: ''
   });
 
-  const [coverImage, setCoverImage] = useState<File | null>(null);
-  const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
-    null
-  );
+  const { screenshotData } = useCurrentGameState();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -26,65 +24,20 @@ export function PublishTab() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCoverImageChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Check file size (100KB limit)
-      const maxSizeInBytes = 100 * 1024; // 100KB in bytes
-      if (file.size > maxSizeInBytes) {
-        toast.error(
-          `File size for '${file.name}' exceeds 100KB limit. Please choose a smaller file.`
-        );
-        setCoverImage(null);
-        setCoverImagePreview(null);
-        event.target.value = ''; // Clear the input field
-        return;
-      }
-
-      const img = new Image();
-      img.onload = () => {
-        if (img.width > 300 || img.height > 300) {
-          toast.error(
-            `Image dimensions for '${file.name}' must be no larger than 300x300 pixels.`
-          );
-          setCoverImage(null);
-          setCoverImagePreview(null);
-          event.target.value = ''; // Clear the input field
-        } else {
-          setCoverImage(file);
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setCoverImagePreview(reader.result as string);
-          };
-          reader.readAsDataURL(file);
-        }
-      };
-      img.onerror = () => {
-        toast.error('Failed to load image. Please select a valid image file.');
-        setCoverImage(null);
-        setCoverImagePreview(null);
-        event.target.value = ''; // Clear the input field on error
-      };
-      img.src = URL.createObjectURL(file);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (
       !formData.name ||
       !formData.genre ||
       !formData.description ||
-      !coverImage
+      !screenshotData
     ) {
-      console.error('Please fill in all fields and upload a cover image');
+      console.error('Please fill in all fields and capture a screenshot');
       return;
     }
 
     try {
-      console.log('Form submitted:', formData, coverImage);
+      console.log('Form submitted:', formData, screenshotData);
       // Reset form after submission
       setFormData({
         name: '',
@@ -92,8 +45,6 @@ export function PublishTab() {
         description: '',
         tags: ''
       });
-      setCoverImage(null);
-      setCoverImagePreview(null);
     } catch (error) {
       console.error('Failed to submit form');
       console.error(error);
@@ -149,36 +100,22 @@ export function PublishTab() {
                 autoComplete='off'
               />
             </div>
-            <div className='grid gap-2 text-neoplay-green'>
-              <Label htmlFor='coverImage'>Cover Image</Label>
-              <div className='flex items-center'>
-                <input
-                  id='coverImage'
-                  type='file'
-                  accept='image/*'
-                  onChange={handleCoverImageChange}
-                  className='hidden'
-                />
-                <Button
-                  asChild
-                  className='bg-neoplay-green hover:bg-neoplay-green-dark text-black cursor-pointer'
-                >
-                  <label htmlFor='coverImage'>Choose File</label>
-                </Button>
-                {coverImage && (
-                  <span className='ml-2 text-sm text-neoplay-green'>
-                    {coverImage.name}
-                  </span>
-                )}
+            <div className='mb-4'>
+              <div className='grid gap-2 text-neoplay-green'>
+                <Label htmlFor='description'>Cover Image</Label>
               </div>
-              {coverImagePreview && (
+              {screenshotData ? (
                 <div className='mt-2'>
                   <img
-                    src={coverImagePreview}
-                    alt='Cover Preview'
-                    style={{ maxWidth: 100, maxHeight: 100 }}
+                    src={screenshotData}
+                    alt='Screenshot Preview'
+                    className='max-w-xs max-h-48 object-contain'
                   />
                 </div>
+              ) : (
+                <p className='text-gray-500 text-sm'>
+                  No screenshot captured yet, capture on Preview Tab.
+                </p>
               )}
             </div>
             <div className='grid gap-2 text-neoplay-green'>
