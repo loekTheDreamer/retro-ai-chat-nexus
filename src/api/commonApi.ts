@@ -192,3 +192,25 @@ export const createGameApi = async () => {
     console.error('Error creating game:', error);
   }
 };
+
+export const uploadCoverImage = async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const response = await fetch(`${baseURL}/upload-cover-image`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.url;
+  } catch (error) {
+    console.error('Error uploading cover image:', error);
+    throw error;
+  }
+};
