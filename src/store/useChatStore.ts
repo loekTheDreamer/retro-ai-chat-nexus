@@ -1,41 +1,46 @@
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
+import { Message } from '@/types/message';
 
-export interface ChatMessage {
-  id: string;
-  type: 'user' | 'assistant' | 'system' | 'error';
-  content: string;
-  timestamp?: string;
-}
+// export interface ChatMessage {
+//   id: string;
+//   type: 'user' | 'assistant' | 'system' | 'error';
+//   content: string;
+//   timestamp?: string;
+// }
 
 interface ChatState {
-  messages: ChatMessage[];
+  threadId: string;
+  chatHistory: Message[];
   isLoading: boolean;
-  addMessage: (message: Omit<ChatMessage, 'id' | 'timestamp'>) => void;
+  addMessage: (message: Message) => void;
   setLoading: (loading: boolean) => void;
   clearMessages: () => void;
+  updateLastAssistantMessage: (content: string) => void;
 }
 
 const useChatStore = create<ChatState>((set) => ({
-  messages: [],
+  threadId: '',
+  chatHistory: [],
   isLoading: false,
   addMessage: (message) => {
-    // Convert 'error' type to 'system' type for consistency
-    const type = message.type === 'error' ? 'system' : message.type;
     set((state) => ({
-      messages: [
-        ...state.messages,
-        {
-          ...message,
-          type,
-          id: uuidv4(),
-          timestamp: new Date().toISOString()
-        }
-      ]
+      chatHistory: [...state.chatHistory, message]
     }));
   },
   setLoading: (loading) => set({ isLoading: loading }),
-  clearMessages: () => set({ messages: [] })
+  clearMessages: () => set({ chatHistory: [] }),
+  updateLastAssistantMessage: (content) => {
+    set((state) => {
+      const newHistory = [...state.chatHistory];
+      // Assumes caller has already checked last message is assistant
+      newHistory[newHistory.length - 1] = {
+        ...newHistory[newHistory.length - 1],
+        content
+      };
+      return { chatHistory: newHistory };
+    });
+  }
 }));
 
 export default useChatStore;

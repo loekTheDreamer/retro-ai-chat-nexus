@@ -5,17 +5,24 @@ import useCurrentGameState from '@/store/useCurrentGameState';
 // import useErrorDetectedStore from '@/store/useErrorDetectedStore';
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
+import { v4 as uuidv4 } from 'uuid';
 
 const useXaiChatHistory = () => {
   //   const [chatHistory, setChatHistory] = useState<Message[]>([]);
-  const [chatHistory, setChatHistory] = useState<Message[]>([]);
+  // const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [imageBubbleArray, setImageBubbleArray] = useState<[]>([]);
 
   const { address } = useAccount();
   const [inputValue, setInputValue] = useState('');
   const [prompted, setPrompted] = useState(false);
 
-  const { isLoading, setLoading } = useChatStore();
+  const {
+    isLoading,
+    setLoading,
+    chatHistory,
+    addMessage,
+    updateLastAssistantMessage
+  } = useChatStore();
   const { saveFilesToDisk } = useCurrentGameState();
 
   // const { setError } = useErrorDetectedStore();
@@ -27,17 +34,20 @@ const useXaiChatHistory = () => {
 
     // setPrompted(true);
     const newUserMessage: Message = {
+      id: uuidv4(),
       role: 'user',
       content: input
     };
 
-    setChatHistory((prev) => [
-      ...prev,
-      {
-        role: 'user',
-        content: input
-      }
-    ]);
+    addMessage(newUserMessage);
+
+    // setChatHistory((prev) => [
+    //   ...prev,
+    //   {
+    //     role: 'user',
+    //     content: input
+    //   }
+    // ]);
     // setImageBubbleArray((prev) => [...prev, null]);
     setInputValue('');
     setPrompted(true);
@@ -50,20 +60,21 @@ const useXaiChatHistory = () => {
         // systemPrompt: claudeGameSystemPrompt,
         onMessage: (content) => {
           accumulatedContent += content;
+          const { chatHistory: latestChatHistory } = useChatStore.getState();
 
-          // console.log('accumulatedContent:', accumulatedContent);
-          setChatHistory((prev) => {
-            const newHistory = [...prev];
-            if (newHistory[newHistory.length - 1]?.role === 'assistant') {
-              newHistory[newHistory.length - 1].content = accumulatedContent;
-            } else {
-              newHistory.push({
-                role: 'assistant',
-                content: accumulatedContent
-              });
-            }
-            return newHistory;
-          });
+          // Use updateLastAssistantMessage if last is assistant, else addMessage
+          if (
+            latestChatHistory.length > 0 &&
+            latestChatHistory[latestChatHistory.length - 1].role === 'assistant'
+          ) {
+            updateLastAssistantMessage(accumulatedContent);
+          } else {
+            addMessage({
+              id: uuidv4(),
+              role: 'assistant',
+              content: accumulatedContent
+            });
+          }
         },
         onDone: () => {
           console.log('final content:', accumulatedContent);
@@ -85,12 +96,12 @@ const useXaiChatHistory = () => {
     } catch (error) {
       console.error('Error in anthropicMessageChat:', error);
     } finally {
-      // setLoading(false);
+      setLoading(false);
     }
   };
   return {
     chatHistory,
-    setChatHistory,
+    // setChatHistory,
     xaiMessageStream,
     isLoading,
     inputValue,

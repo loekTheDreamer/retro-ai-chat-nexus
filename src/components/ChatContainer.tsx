@@ -6,22 +6,23 @@ import { AgentBubble } from './AgentBubble';
 interface ChatContainerProps {
   messages: Message[];
   isLoading?: boolean;
-  setChatHistory: (
-    newHistory: Message[] | ((prev: Message[]) => Message[])
-  ) => void;
+  // setChatHistory: (
+  //   newHistory: Message[] | ((prev: Message[]) => Message[])
+  // ) => void;
   chatEndRef: React.RefObject<HTMLDivElement>;
 }
 
 export const ChatContainer: React.FC<ChatContainerProps> = ({
   messages,
   isLoading,
-  setChatHistory,
+  // setChatHistory,
   chatEndRef
 }) => {
   return (
     <div className='flex-1 overflow-y-auto p-6 chat-container space-y-4'>
       {messages.map((msg) => (
         <div
+          key={msg.id} // <-- This is the correct place!
           className={`flex ${
             msg.role === 'user' ? 'justify-end' : 'justify-start w-full'
           }`}>
@@ -31,17 +32,17 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
                 ? 'bg-neoplay-gray text-white max-w-[80%]'
                 : 'bg-neoplay-darkGreen bg-opacity-20 border border-neoplay-green text-neoplay-green w-full'
             }`}>
-            <p className='whitespace-pre-wrap'>
+            <div className='whitespace-pre-wrap'>
               {msg.role === 'user' ? (
                 msg.content
               ) : (
                 <AgentBubble
                   content={msg.content}
-                  setChatHistory={setChatHistory}
+                  // setChatHistory={setChatHistory}
                   messageCount={0}
                 />
               )}
-            </p>
+            </div>
 
             <div className='text-xs text-gray-400 mt-1'></div>
           </div>

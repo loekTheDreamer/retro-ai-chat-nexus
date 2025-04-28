@@ -24,9 +24,9 @@ interface AgentBubbleProps {
   iframeErrorState?: 'fixing' | 'done';
   showDevError?: boolean;
   codeCreationError?: 'fixing' | 'done';
-  setChatHistory: (
-    newHistory: Message[] | ((prev: Message[]) => Message[])
-  ) => void;
+  // setChatHistory: (
+  //   newHistory: Message[] | ((prev: Message[]) => Message[])
+  // ) => void;
   messageCount: number;
 }
 
@@ -76,7 +76,7 @@ export const AgentBubble: React.FC<AgentBubbleProps> = ({
   commentError,
   iframeErrorState,
   codeCreationError,
-  setChatHistory,
+  // setChatHistory,
   showDevError,
   messageCount
 }) => {
@@ -110,7 +110,7 @@ export const AgentBubble: React.FC<AgentBubbleProps> = ({
     setFiles(files);
     setGameFiles(files);
     setAfterCode(after);
-  }, [commentError, setGameFiles, setFiles, content, setChatHistory]);
+  }, [commentError, setGameFiles, setFiles, content]);
   // console.log('shouldAutoScroll: ', shouldAutoScroll);
   const editorRef = useRef<AceEditor>(null);
 
@@ -154,36 +154,40 @@ export const AgentBubble: React.FC<AgentBubbleProps> = ({
         <ReactMarkdown>{beforeCode}</ReactMarkdown>
       </div>
 
-      {files &&
-        files.map((file) =>
-          file.filename ? (
-            <div key={file.filename}>
-              {'\n'}
-              {file.filename}
-              <AceEditor
-                mode={file.type}
-                theme='mycustom'
-                value={file.code}
-                name='UNIQUE_ID_OF_DIV'
-                width='100%'
-                readOnly={true}
-                showPrintMargin={false}
-                showGutter={true}
-                highlightActiveLine={false}
-                setOptions={{
-                  showLineNumbers: true,
-                  tabSize: 2,
-                  useWorker: false,
-                  highlightGutterLine: false,
-                  wrap: true
-                }}
-                height='300px'
-                wrapEnabled={true}
-                // editorProps={{ $blockScrolling: true }}
-              />
-            </div>
-          ) : null
-        )}
+      {/* Render files outside of Markdown-generated <p> */}
+      {files && files.length > 0 && (
+        <div>
+          {files.map((file) =>
+            file.filename ? (
+              <div key={file.filename}>
+                {'\n'}
+                {file.filename}
+                <AceEditor
+                  mode={file.type}
+                  theme='mycustom'
+                  value={file.code}
+                  name={`editor_${file.filename}`}
+                  width='100%'
+                  readOnly={true}
+                  showPrintMargin={false}
+                  showGutter={true}
+                  highlightActiveLine={false}
+                  setOptions={{
+                    showLineNumbers: true,
+                    tabSize: 2,
+                    useWorker: false,
+                    highlightGutterLine: false,
+                    wrap: true
+                  }}
+                  height='300px'
+                  wrapEnabled={true}
+                />
+              </div>
+            ) : null
+          )}
+        </div>
+      )}
+
       <div className='prose prose-invert'>
         <ReactMarkdown>{afterCode}</ReactMarkdown>
       </div>

@@ -16,7 +16,7 @@ const ChatInterface = () => {
 
   const {
     chatHistory,
-    setChatHistory,
+    // setChatHistory,
     xaiMessageStream,
     isLoading,
     inputValue,
@@ -61,7 +61,7 @@ const ChatInterface = () => {
         messages={chatHistory}
         isLoading={isLoading}
         // imageBubbleArray={imageBubbleArray}
-        setChatHistory={setChatHistory}
+        // setChatHistory={setChatHistory}
         // messageCount={messageCount}
         chatEndRef={chatEndRef}
       />
