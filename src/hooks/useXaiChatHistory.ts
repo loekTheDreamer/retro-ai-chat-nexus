@@ -6,15 +6,18 @@ import useCurrentGameState from '@/store/useCurrentGameState';
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { v4 as uuidv4 } from 'uuid';
+import useAuthStore from '@/store/useAuthStore';
+import { toast } from 'sonner';
 
 const useXaiChatHistory = () => {
   //   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   // const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [imageBubbleArray, setImageBubbleArray] = useState<[]>([]);
 
-  const { address } = useAccount();
+  // const { address } = useAccount();
   const [inputValue, setInputValue] = useState('');
   const [prompted, setPrompted] = useState(false);
+  const { address } = useAuthStore();
 
   const {
     isLoading,
@@ -77,25 +80,18 @@ const useXaiChatHistory = () => {
           }
         },
         onDone: () => {
-          console.log('final content:', accumulatedContent);
-          // const code = parseHtmlFullContent(accumulatedContent);
-          // if (code) {
-          //   setHtmlContent(code);
-          // }
+          setLoading(false);
 
           if (!address) {
             console.error('No address provided');
+            toast.error('no address provided');
             return;
           }
-          console.log('address:', address);
           saveFilesToDisk(address);
-
-          setLoading(false);
         }
       });
     } catch (error) {
-      console.error('Error in anthropicMessageChat:', error);
-    } finally {
+      console.error('Error in xaiChat:', error);
       setLoading(false);
     }
   };

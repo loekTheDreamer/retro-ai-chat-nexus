@@ -95,8 +95,6 @@ export const AgentBubble: React.FC<AgentBubbleProps> = ({
   const { isLoading } = useChatStore();
   const { setGameFiles } = useCurrentGameState();
 
-  // console.log('files:', gameFiles);
-
   useEffect(() => {
     if (commentError) {
       console.log('commentError:', commentError);
@@ -143,10 +141,6 @@ export const AgentBubble: React.FC<AgentBubbleProps> = ({
       setShouldAutoScroll(false);
     }
   };
-
-  // if (showDevError) {
-  //   return <DevErrorBubble />;
-  // }
 
   return (
     <div>
