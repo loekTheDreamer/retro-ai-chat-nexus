@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { Code, Eye } from 'lucide-react';
+import { Code, Eye, BookUp } from 'lucide-react';
 import PreviewTab from './PreviewTab';
+import PublishTab from './PublishTab';
 
 interface RightPanelProps {
   isOpen: boolean;
 }
 
 const RightPanel = ({ isOpen }: RightPanelProps) => {
-  const [activeTab, setActiveTab] = useState<'code' | 'preview'>('code');
+  const [activeTab, setActiveTab] = useState<'code' | 'preview' | 'publish'>(
+    'code'
+  );
 
   if (!isOpen) return null;
 
@@ -56,6 +59,14 @@ const RightPanel = ({ isOpen }: RightPanelProps) => {
           <Eye size={16} className='mr-2' />
           <span>PREVIEW</span>
         </button>
+        <button
+          onClick={() => setActiveTab('publish')}
+          className={`flex-1 p-2 flex items-center justify-center ${
+            activeTab === 'publish' ? 'bg-neoplay-green text-neoplay-black' : ''
+          }`}>
+          <BookUp size={16} className='mr-2' />
+          <span>PUBLISH</span>
+        </button>
       </div>
 
       {/* Content */}
@@ -66,6 +77,7 @@ const RightPanel = ({ isOpen }: RightPanelProps) => {
           </div>
         )}
         {activeTab === 'preview' && <PreviewTab />}
+        {activeTab === 'publish' && <PublishTab />}
       </div>
     </div>
   );
