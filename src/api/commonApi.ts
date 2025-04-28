@@ -106,7 +106,7 @@ export const saveFilesToDiskApi = async ({
   console.log('sending files to server');
 
   try {
-    const response = await fetch(`${baseURL}/save`, {
+    const response = await fetch(`${baseURL}/game/save`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
