@@ -48,6 +48,12 @@ export default {
             li: {
               marginTop: '0',
               marginBottom: '0'
+            },
+            code: {
+              backgroundColor: `${theme('colors.neoplay.green')} !important`,
+              color: `${theme('colors.neoplay.black')} !important`,
+              borderRadius: '0.5em',
+              padding: '0.2em 0.4em'
             }
           }
         }
