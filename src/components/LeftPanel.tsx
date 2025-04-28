@@ -88,7 +88,14 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
   }, [token]);
 
   const handleGameRename = (newName: string) => {
-    setUpdatedGameName(newName);
+    // setUpdatedGameName(newName);
+    const updatedGames = games.map((game) => {
+      if (game.id === gameIdToUpdate) {
+        return { ...game, name: newName };
+      }
+      return game;
+    });
+    setGames(updatedGames);
   };
 
   if (!isOpen) return null;

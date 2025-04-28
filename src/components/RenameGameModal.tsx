@@ -7,6 +7,8 @@ import {
   DialogDescription
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { updateGameNameApi } from '@/api/commonApi';
+import { toast } from 'sonner';
 
 interface WalletModalProps {
   isOpen: boolean;
@@ -22,13 +24,34 @@ const RenameGameModal = ({
   gameId
 }: WalletModalProps) => {
   const [gameName, setGameName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (gameName.trim()) {
-      onGameRename(gameName.trim());
-      setGameName('');
-      onClose();
+
+    const newName = gameName.trim();
+    // only checks if non empty
+    if (newName) {
+      console.log('gameName:', gameName);
+      console.log('gameId:', gameId);
+
+      setIsLoading(true);
+      try {
+        const response = await updateGameNameApi(newName, gameId);
+        if (!response) {
+          throw new Error('Failed to update game name');
+        }
+        console.log('response:', response);
+        setIsLoading(false);
+
+        onGameRename(newName);
+        setGameName('');
+        onClose();
+      } catch (error) {
+        setIsLoading(false);
+        console.error('Error updating game name:', error);
+        toast.error('Failed to update game title');
+      }
     }
   };
 
@@ -56,8 +79,9 @@ const RenameGameModal = ({
           />
           <Button
             type='submit'
+            disabled={isLoading}
             className='bg-neoplay-green text-neoplay-black font-pixel mt-2 hover:bg-green-400 transition-colors'>
-            Submit
+            {isLoading ? 'Updating...' : 'Submit'}
           </Button>
         </form>
       </DialogContent>
