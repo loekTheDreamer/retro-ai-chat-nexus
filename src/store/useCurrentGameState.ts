@@ -19,12 +19,14 @@ interface CurrentGameState {
   gameFiles: GameFiles[];
   updateId: number;
   currentGameId: string;
+  screenshotData: string;
   setGameFiles: (files: GameFiles[]) => void;
   updateGameFiles: (files: GameFiles[]) => void;
   saveFilesToDisk: (address: string, navigate: NavigateFunction) => void;
 
   deleteGame: (address?: string) => void;
   publishGame: ({ token, title }: PublishGame) => void;
+  setScreenshotData: (data: string) => void;
   // setTempId: () => void;
 }
 const baseUrl = import.meta.env.VITE_BASEURL;
@@ -35,6 +37,7 @@ const useCurrentGameState = create<CurrentGameState>()(
       gameFiles: [],
       currentGameId: '',
       updateId: 0,
+      screenshotData: '',
       setGameFiles: (files) => set({ gameFiles: files }),
       updateGameFiles: (files) =>
         set((state) => ({
@@ -107,8 +110,10 @@ const useCurrentGameState = create<CurrentGameState>()(
         }
         set({ currentGameId: response.id });
         console.log('Game published successfully');
-      }
+      },
+      setScreenshotData: (data: string) => set({ screenshotData: data })
     }),
+
     {
       name: 'current-game-state', // unique name for localStorage key
       storage: createJSONStorage(() => localStorage) // properly typed storage for Zustand

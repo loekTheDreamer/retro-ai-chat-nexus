@@ -5,6 +5,7 @@ import { useIframeErrorStore } from '@/store/useIframeErrorStore';
 import React, { useEffect, useRef, useState } from 'react';
 import { useAccount } from 'wagmi';
 import html2canvas from 'html2canvas';
+import { toast } from 'sonner';
 
 // const baseUrl = import.meta.env.VITE_BASEURL;
 // const VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN = import.meta.env
@@ -21,7 +22,7 @@ type ErrorState = {
 export const PreviewTab: React.FC = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  const { updateId } = useCurrentGameState();
+  const { updateId, setScreenshotData } = useCurrentGameState();
 
   // const { address } = useAccount();
   const { address } = useAuthStore();
@@ -89,16 +90,21 @@ export const PreviewTab: React.FC = () => {
   // Listen for screenshot data from the iframe
   React.useEffect(() => {
     const handler = (event: MessageEvent) => {
+      // if (event.data?.type === 'screenshot-data' && event.data.imageData) {
+      //   const link = document.createElement('a');
+      //   link.download = `game-preview-${updateId}.png`;
+      //   link.href = event.data.imageData;
+      //   link.click();
+      // }
       if (event.data?.type === 'screenshot-data' && event.data.imageData) {
-        const link = document.createElement('a');
-        link.download = `game-preview-${updateId}.png`;
-        link.href = event.data.imageData;
-        link.click();
+        setScreenshotData(event.data.imageData); // Save to store
+        // Optionally, show a toast or UI feedback that screenshot is ready!
+        toast.success('Cover image captured');
       }
     };
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
-  }, [updateId]);
+  }, [updateId, setScreenshotData]);
 
   // console.log('htmlContent', htmlContent);
   console.log('currentGameId: ', updateId);
