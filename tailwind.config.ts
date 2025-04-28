@@ -102,6 +102,7 @@ export default {
           black: '#0A0A0A',
           green: '#4AFF00',
           darkGreen: '#39CC00',
+          // darkGreen: '#2CA800',
           gray: '#333333',
           lightGray: '#555555'
         }

@@ -61,7 +61,7 @@ export function PublishTab() {
 
   return (
     <div className='p-6 max-w-4xl mx-auto'>
-      <Card className='w-full'>
+      <Card className='w-full  border-neoplay-green'>
         <CardHeader>
           <CardTitle className='text-2xl text-neoplay-green'>
             Publish a New Game
@@ -121,8 +121,8 @@ export function PublishTab() {
                   />
                 </div>
               ) : (
-                <p className='text-gray-500 text-sm'>
-                  No screenshot captured yet, capture on Preview Tab.
+                <p className='text-gray-500 text-sm pt-2'>
+                  No cover image captured yet, capture on Preview Tab.
                 </p>
               )}
             </div>
