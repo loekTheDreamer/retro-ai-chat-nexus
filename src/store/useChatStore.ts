@@ -6,6 +6,7 @@ interface ChatState {
   threadId: string;
   chatHistory: Message[];
   isLoading: boolean;
+  updateIdForGamePreview: number;
   addMessage: (message: Message) => void;
   setLoading: (loading: boolean) => void;
   clearMessages: () => void;
@@ -17,6 +18,7 @@ const useChatStore = create<ChatState>()(
     (set) => ({
       threadId: '',
       chatHistory: [],
+      updateIdForGamePreview: 0,
       isLoading: false,
       addMessage: (message) => {
         set((state) => ({

@@ -8,10 +8,10 @@ export interface PublishedGame {
   title: string;
 }
 
-interface PublishGame {
-  address: string;
+export interface PublishGame {
+  token: string;
   title: string;
-  id?: string;
+  id: string;
 }
 
 interface SaveFilesToDisk {
@@ -81,7 +81,18 @@ export const saveFilesToDiskApi = async ({
               });
             };
           })();
-        </script>`
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+        <script>
+          window.addEventListener('message', async (event) => {
+            if (event.data?.type === 'capture-screenshot') {
+              const canvas = await html2canvas(document.body); // or target node
+              const imageData = canvas.toDataURL('image/png');
+              window.parent.postMessage({ type: 'screenshot-data', imageData }, '*');
+            }
+          });
+        </script>
+        `
               )
             }
           : f
@@ -156,14 +167,14 @@ export const serveCurrentGameApi = async (address: string) => {
   }
 };
 
-export const publishGameApi = async ({ address, title, id }: PublishGame) => {
+export const publishGameApi = async ({ token, title, id }: PublishGame) => {
   try {
     const response = await fetch(`${baseURL}/publish`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ address, title, id })
+      body: JSON.stringify({ token, title, id })
     });
     if (!response.ok) {
       throw new Error('Failed to publish game');
@@ -174,7 +185,7 @@ export const publishGameApi = async ({ address, title, id }: PublishGame) => {
   }
 };
 
-export const createGameApi = async () => {
+export const createGameApi = async (token: string) => {
   try {
     const response = await fetch(`${baseURL}/game`, {
       method: 'POST',
@@ -200,7 +211,7 @@ export const uploadCoverImage = async (file: File): Promise<string> => {
   try {
     const response = await fetch(`${baseURL}/upload-cover-image`, {
       method: 'POST',
-      body: formData,
+      body: formData
     });
 
     if (!response.ok) {
