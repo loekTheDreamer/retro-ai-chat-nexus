@@ -63,6 +63,7 @@ const useXaiChatHistory = () => {
       let accumulatedContent = '';
       xaiStreamEvent({
         chatHistory: chatHistory.concat(newUserMessage),
+        threadId: 'e05055b0-9dec-4a06-a3dc-a194ef2e0334',
         // systemPrompt: claudeGameSystemPrompt,
         onMessage: (content) => {
           accumulatedContent += content;
@@ -84,7 +85,7 @@ const useXaiChatHistory = () => {
         },
         onDone: () => {
           setLoading(false);
-          console.log('accumulatedContent:', accumulatedContent);
+          // console.log('accumulatedContent:', accumulatedContent);
           // if (!address) {
           //   console.error('No address provided');
           //   toast.error('no address provided');

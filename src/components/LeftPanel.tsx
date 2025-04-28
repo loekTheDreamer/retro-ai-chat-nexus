@@ -49,15 +49,15 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
   const pencilTimers = React.useRef<Record<string, NodeJS.Timeout>>({});
 
   const handlePencilHoverEnter = (gameId: string) => {
-    console.log('handlePencilHoverEnter', gameId);
+    // console.log('handlePencilHoverEnter', gameId);
     pencilTimers.current[gameId] = setTimeout(() => {
-      console.log('setShowPencilFor TRUE for', gameId);
+      // console.log('setShowPencilFor TRUE for', gameId);
       setShowPencilFor((prev) => ({ ...prev, [gameId]: true }));
     }, 300); // 700ms delay
   };
 
   const handlePencilHoverLeave = (gameId: string) => {
-    console.log('handlePencilHoverLeave', gameId);
+    // console.log('handlePencilHoverLeave', gameId);
     clearTimeout(pencilTimers.current[gameId]);
     setShowPencilFor((prev) => ({ ...prev, [gameId]: false }));
   };
