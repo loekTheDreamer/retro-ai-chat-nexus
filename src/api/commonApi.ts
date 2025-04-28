@@ -1,4 +1,5 @@
 import { GameFiles } from '@/store/useCurrentGameState';
+import useAuthStore from '@/store/useAuthStore';
 
 const baseURL = import.meta.env.VITE_BASEURL;
 
@@ -244,5 +245,27 @@ export const getUserGamesApi = async (token: string) => {
     return response.json();
   } catch (error) {
     console.error('Error fetching user games:', error);
+  }
+};
+
+export const updateGameNameApi = async (newName: string, gameId: string) => {
+  const token = useAuthStore.getState().token;
+
+  try {
+    const response = await fetch(`${baseURL}/game/name`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ newName, gameId })
+    });
+    if (!response.ok) {
+      throw new Error('Failed to update game name');
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error updating game name:', error);
   }
 };

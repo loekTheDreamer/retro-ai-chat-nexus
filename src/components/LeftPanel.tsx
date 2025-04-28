@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronDown, Plus, Pencil } from 'lucide-react';
-import { getUserGamesApi } from '@/api/commonApi';
+import { getUserGamesApi, updateGameNameApi } from '@/api/commonApi';
 import useAuthStore from '@/store/useAuthStore';
+import RenameGameModal from './RenameGameModal';
 
 interface Game {
   id: string;
@@ -29,6 +30,9 @@ interface LeftPanelProps {
 
 const LeftPanel = ({ isOpen }: LeftPanelProps) => {
   const [games, setGames] = useState<Game[]>([]);
+  const [isGameModalOpen, setIsGameModalOpen] = useState(false);
+  const [updatedGameName, setUpdatedGameName] = useState('');
+  const [gameIdToUpdate, setGameIdToUpdate] = useState('');
 
   const { token } = useAuthStore();
 
@@ -83,6 +87,10 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     getGames();
   }, [token]);
 
+  const handleGameRename = (newName: string) => {
+    setUpdatedGameName(newName);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -104,9 +112,15 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
                   <span className='relative flex items-center'>
                     <Pencil
                       size={12}
-                      className={`mr-1 z-10 transition-opacity duration-700 ${showPencilFor[game.id] ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+                      className={`mr-1 z-10 transition-opacity duration-700 ${
+                        showPencilFor[game.id]
+                          ? 'opacity-100 pointer-events-auto'
+                          : 'opacity-0 pointer-events-none'
+                      }`}
                       onClick={() => {
-                        console.log('click');
+                        setGameIdToUpdate(game.id);
+                        setIsGameModalOpen(true);
+                        // updateGameNameApi('newName', game.id);
                       }}
                     />
                   </span>
@@ -146,6 +160,12 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
           <span>NEW GAME PROJECT</span>
         </button>
       </div>
+      <RenameGameModal
+        isOpen={isGameModalOpen}
+        onClose={() => setIsGameModalOpen(false)}
+        onGameRename={handleGameRename}
+        gameId={gameIdToUpdate}
+      />
     </div>
   );
 };
