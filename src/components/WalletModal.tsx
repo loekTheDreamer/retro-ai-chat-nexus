@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { WalletCards, Wallet } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Wallet } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -17,13 +17,6 @@ interface WalletModalProps {
 
 const WalletModal = ({ isOpen, onClose, onWalletSelect }: WalletModalProps) => {
   const { connectors, connect } = useConnect();
-
-  const wallets = [
-    {
-      name: 'Injected',
-      icon: <Wallet className='w-5 h-5' />
-    }
-  ];
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -50,11 +43,7 @@ const WalletModal = ({ isOpen, onClose, onWalletSelect }: WalletModalProps) => {
 
 export default WalletModal;
 
-function WalletOption({
-  connector
-}: {
-  connector: Connector;
-}) {
+function WalletOption({ connector }: { connector: Connector }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {

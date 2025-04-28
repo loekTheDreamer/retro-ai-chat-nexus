@@ -62,6 +62,7 @@ const Index = () => {
         }
 
         setAuth(jwtToken, returnedAddress);
+        await disconnect(config);
 
         // setResponseCode(code);
         // if (code === 200) {
@@ -106,15 +107,7 @@ const Index = () => {
       toast.success('Address connected...');
       loginWithWallet(address);
     }
-  }, [
-    isConnected,
-    address,
-    signMessageAsync,
-    disconnect,
-    loginStatus,
-    navigate,
-    setAuth
-  ]);
+  }, [isConnected, address, signMessageAsync, loginStatus, navigate, setAuth]);
 
   const handleConnect = () => {
     setIsWalletModalOpen(true);
@@ -148,6 +141,19 @@ const Index = () => {
 
   useEffect(() => {
     console.log('errorMsg:', errorMsg);
+
+    const refresh = async () => {
+      setIsConnecting(false);
+      setLoginStatus('idle');
+      setIsConnecting(false);
+      setLoginStatus('error');
+      setIsWalletModalOpen(false);
+      toast.error(errorMsg);
+      await disconnect(config);
+    };
+    if (errorMsg) {
+      refresh();
+    }
   }, [errorMsg]);
   // if (loginStatus === 'loading') return <div>Logging in...</div>;
   // if (loginStatus === 'error' || responseCode !== 200)
