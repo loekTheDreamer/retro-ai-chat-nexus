@@ -106,8 +106,6 @@ export const PreviewTab: React.FC = () => {
     return () => window.removeEventListener('message', handler);
   }, [updateId, setScreenshotData]);
 
-  // console.log('htmlContent', htmlContent);
-  console.log('currentGameId: ', updateId);
   return (
     <div className='flex flex-col items-center justify-center h-full p-4'>
       <div className='border-2 border-neoplay-green p-2 bg-neoplay-black'>
@@ -128,7 +126,13 @@ export const PreviewTab: React.FC = () => {
           )}
         </div>
       </div>
-      {updateId > 0 && (
+      {iframeError && (
+        <div className='mt-5 text-red-500 hover:bg-neoplay-green-dark text-black px-4 py-2 rounded'>
+          <p>{iframeError.msg}</p>
+          <p>at line {iframeError.line}</p>
+        </div>
+      )}
+      {updateId > 0 && iframeError === null && (
         <button
           onClick={handleScreenshot}
           className='mt-2 bg-neoplay-green hover:bg-neoplay-green-dark text-black px-4 py-2 rounded'>
