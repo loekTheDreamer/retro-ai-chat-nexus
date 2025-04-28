@@ -142,6 +142,13 @@ export const AgentBubble: React.FC<AgentBubbleProps> = ({
     }
   };
 
+  // useEffect(() => {
+  //   console.log('content: ', content);
+  //   console.log('before:', beforeCode);
+  //   console.log('code: ', code);
+  //   console.log('after:', afterCode);
+  // }, [afterCode, beforeCode, code, content]);
+
   return (
     <div>
       <div className='prose prose-invert'>

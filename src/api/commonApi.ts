@@ -86,9 +86,11 @@ export const saveFilesToDiskApi = async ({
         <script>
           window.addEventListener('message', async (event) => {
             if (event.data?.type === 'capture-screenshot') {
+              console.log('Iframe received capture-screenshot message');
               const canvas = await html2canvas(document.body); // or target node
               const imageData = canvas.toDataURL('image/png');
               window.parent.postMessage({ type: 'screenshot-data', imageData }, '*');
+              console.log('Iframe sent screenshot data back');
             }
           });
         </script>

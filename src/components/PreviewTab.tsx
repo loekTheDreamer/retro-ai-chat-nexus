@@ -20,7 +20,7 @@ type ErrorState = {
 } | null;
 
 export const PreviewTab: React.FC = () => {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const { updateId, setScreenshotData } = useCurrentGameState();
 
@@ -37,92 +37,106 @@ export const PreviewTab: React.FC = () => {
     setCurrentGameURL(url);
   }, [address]);
 
-  // Listen for error messages from the iframe
+  // Listen for error messages and screenshot data from the iframe
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === 'iframe-error') {
         const { msg, url, line, col } = event.data;
-        // setIframeError({ msg, url, line, col });
         setIframeError({ msg, url, line, col });
         console.log('Received iframe error:', event.data);
+      }
+      if (event.data?.type === 'screenshot-data' && event.data.imageData) {
+        setScreenshotData(event.data.imageData);
       }
     };
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [setIframeError]);
+  }, [setIframeError, setScreenshotData]);
+
+  // Function to trigger screenshot capture in the iframe
+  const captureScreenshot = () => {
+    if (containerRef.current) {
+      const iframe = containerRef.current.querySelector('iframe');
+      if (iframe) {
+        iframe.contentWindow?.postMessage({ type: 'capture-screenshot' }, '*');
+        console.log('Sent capture-screenshot message to iframe');
+      } else {
+        console.error('No iframe found in container');
+      }
+    } else {
+      console.error('Container ref is not set');
+    }
+  };
 
   useEffect(() => {
     const handleIframeLoad = () => {
-      if (iframeRef.current) {
-        iframeRef.current.focus();
+      if (containerRef.current) {
+        containerRef.current.focus();
       }
     };
 
-    if (iframeRef.current) {
-      iframeRef.current.addEventListener('load', handleIframeLoad);
-      iframeRef.current.focus();
+    const currentContainer = containerRef.current;
+    if (currentContainer) {
+      currentContainer.addEventListener('load', handleIframeLoad);
+      currentContainer.focus();
     }
 
     return () => {
-      if (iframeRef.current) {
-        iframeRef.current.removeEventListener('load', handleIframeLoad);
+      if (currentContainer) {
+        currentContainer.removeEventListener('load', handleIframeLoad);
       }
     };
   }, []);
 
   const handleClick = () => {
-    if (iframeRef.current) {
-      iframeRef.current.focus();
+    if (containerRef.current) {
+      containerRef.current.focus();
     }
   };
 
   const handleScreenshot = () => {
-    if (iframeRef.current) {
-      // Send a message to the iframe to request a screenshot
-      iframeRef.current.contentWindow?.postMessage(
-        { type: 'capture-screenshot' },
-        '*'
-      );
+    if (containerRef.current) {
+      captureScreenshot();
     }
   };
 
   // Listen for screenshot data from the iframe
   React.useEffect(() => {
     const handler = (event: MessageEvent) => {
-      // if (event.data?.type === 'screenshot-data' && event.data.imageData) {
-      //   const link = document.createElement('a');
-      //   link.download = `game-preview-${updateId}.png`;
-      //   link.href = event.data.imageData;
-      //   link.click();
-      // }
       if (event.data?.type === 'screenshot-data' && event.data.imageData) {
-        setScreenshotData(event.data.imageData); // Save to store
-        // Optionally, show a toast or UI feedback that screenshot is ready!
+        setScreenshotData(event.data.imageData);
         toast.success('Cover image captured');
+        console.log('Received screenshot data from iframe');
+      } else if (event.data?.type === 'screenshot-error') {
+        toast.error('Failed to capture cover image');
+        console.error('Screenshot error:', event.data.error);
+      } else {
+        console.log('Received unknown message from iframe:', event.data);
       }
     };
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
-  }, [updateId, setScreenshotData]);
+  }, [setScreenshotData]);
 
   return (
     <div className='flex flex-col items-center justify-center h-full p-4'>
       <div className='border-2 border-neoplay-green p-2 bg-neoplay-black'>
-        <div className='w-600 h-600 bg-neoplay-gray'>
+        <div ref={containerRef} className='w-600 h-600 bg-neoplay-gray'>
           {updateId > 0 && (
-            <iframe
-              key={updateId}
-              ref={iframeRef}
-              // src='/anotherClaudeTest.html'
-              // src='/testFix.html'
-              src={currentGameURL}
-              // src={props.src}
-              width='600'
-              height='600'
-              style={{ border: 0, display: 'block' }}
-              allowFullScreen
-            />
+            <div>
+              <iframe
+                key={updateId}
+                // src='/anotherClaudeTest.html'
+                // src='/testFix.html'
+                src={currentGameURL}
+                // src={props.src}
+                width='600'
+                height='600'
+                style={{ border: 0, display: 'block' }}
+                allowFullScreen
+              />
+            </div>
           )}
         </div>
       </div>

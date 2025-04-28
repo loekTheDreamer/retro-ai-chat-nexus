@@ -2,13 +2,9 @@ import { Message } from '@/types/message';
 import { xaiStreamEvent } from '@/api/xai';
 import useChatStore from '@/store/useChatStore';
 import useCurrentGameState from '@/store/useCurrentGameState';
-// import useErrorDetectedStore from '@/store/useErrorDetectedStore';
-import { useState } from 'react';
-import { useAccount } from 'wagmi';
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import useAuthStore from '@/store/useAuthStore';
-import { toast } from 'sonner';
-import { logoutUnauthorized } from '@/helpers/logout';
 import { useNavigate } from 'react-router-dom';
 
 const useXaiChatHistory = () => {
@@ -16,7 +12,7 @@ const useXaiChatHistory = () => {
   // const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [imageBubbleArray, setImageBubbleArray] = useState<[]>([]);
 
-  // const { address } = useAccount();
+  // const { address } = useAccount();`
   const [inputValue, setInputValue] = useState('');
   const [prompted, setPrompted] = useState(false);
   const { token, address } = useAuthStore();
@@ -33,6 +29,9 @@ const useXaiChatHistory = () => {
   const { saveFilesToDisk } = useCurrentGameState();
 
   // const { setError } = useErrorDetectedStore();
+  useEffect(() => {
+    // console.log('chatHistory: ', chatHistory[chatHistory.length - 1].content);
+  }, [chatHistory]);
 
   const xaiMessageStream = () => {
     const input = inputValue.trim();
@@ -85,7 +84,7 @@ const useXaiChatHistory = () => {
         },
         onDone: () => {
           setLoading(false);
-
+          console.log('accumulatedContent:', accumulatedContent);
           // if (!address) {
           //   console.error('No address provided');
           //   toast.error('no address provided');

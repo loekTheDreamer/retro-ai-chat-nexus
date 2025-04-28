@@ -18,7 +18,7 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
   // setChatHistory,
   chatEndRef
 }) => {
-  console.log('isloading', isLoading);
+  // console.log('isloading', isLoading);
   return (
     <div className='flex-1 overflow-y-auto p-6 chat-container space-y-4'>
       {messages.map((msg) => (
