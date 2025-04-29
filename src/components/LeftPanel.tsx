@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ChevronDown, Plus, Pencil } from 'lucide-react';
 import {
   addThreadApi,
+  createNewGame,
   getThreadsApi,
   getUserGamesApi,
   updateGameNameApi
@@ -155,6 +156,13 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     updateCurrentGameStore(currentGameId);
   };
 
+  const handleCreateNewGame = async () => {
+    const newGame = await createNewGame();
+    console.log('newGame:', newGame);
+    resetChatStore(newGame.threads[0].id);
+    resetCurrentGameStore();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -222,7 +230,9 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
           ))}
         </div>
 
-        <button className='retro-btn w-full mt-4 text-sm py-1 flex items-center justify-center'>
+        <button
+          className='retro-btn w-full mt-4 text-sm py-1 flex items-center justify-center'
+          onClick={handleCreateNewGame}>
           <Plus size={16} className='mr-1' />
           <span>NEW GAME PROJECT</span>
         </button>

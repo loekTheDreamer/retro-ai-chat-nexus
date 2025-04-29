@@ -314,3 +314,27 @@ export const getThreadsApi = async (id: string) => {
     console.error('Error getting threads:', error);
   }
 };
+
+export const createNewGame = async () => {
+  const token = useAuthStore.getState().token;
+
+  try {
+    console.log('Creating new game');
+    console.log('token:', token);
+    const response = await fetch(`${baseURL}/game`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ token })
+    });
+    if (!response.ok) {
+      throw new Error('Failed to create game');
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error creating game:', error);
+  }
+};
