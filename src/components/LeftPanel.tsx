@@ -32,13 +32,13 @@ interface LeftPanelProps {
 }
 
 const LeftPanel = ({ isOpen }: LeftPanelProps) => {
-  const [games, setGames] = useState<GamesList[]>([]);
+  const [gamesList, setGamesList] = useState<GamesList[]>([]);
   const [isGameModalOpen, setIsGameModalOpen] = useState(false);
   const [updatedGameName, setUpdatedGameName] = useState('');
   const [gameIdToUpdate, setGameIdToUpdate] = useState('');
 
   const { token } = useAuthStore();
-  const { setThreadId } = useChatStore();
+  const { setThreadId, setReplaceChatHistory } = useChatStore();
 
   const [expandedGames, setExpandedGames] = useState<Record<string, boolean>>({
     '1': true,
@@ -86,22 +86,23 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     const getGames = async () => {
       const { latestGame, gameList } = await getUserGamesApi(token);
       console.log('latestGame:', latestGame);
-      console.log('gameList:', gameList);
-      setGames(gameList);
+      // console.log('gameList:', gameList);
+      setGamesList(gameList);
       setThreadId(latestGame.threads[0].id); // need to return the last game on with but also a list of the games
+      setReplaceChatHistory(latestGame.threads[0].messages);
     };
     getGames();
-  }, [setThreadId, token]);
+  }, [setReplaceChatHistory, setThreadId, token]);
 
   const handleGameRename = (newName: string) => {
     // setUpdatedGameName(newName);
-    const updatedGames = games.map((game) => {
+    const updatedGames = gamesList.map((game) => {
       if (game.id === gameIdToUpdate) {
         return { ...game, name: newName };
       }
       return game;
     });
-    setGames(updatedGames);
+    setGamesList(updatedGames);
   };
 
   if (!isOpen) return null;
@@ -113,7 +114,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
         <h2 className='font-pixel text-sm mb-4'>GAME PROJECTS</h2>
 
         <div className='space-y-2'>
-          {games.map((game) => (
+          {gamesList.map((game) => (
             <div key={game.id} className='border border-neoplay-green'>
               <button
                 onClick={() => toggleGameExpand(game.id)}
@@ -149,7 +150,6 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
 
               {expandedGames[game.id] && (
                 <div className='pl-4 border-t border-neoplay-green'>
-                  {/* TODO: send the first message from the thread */}
                   {game.threads.map((thread) => (
                     <button
                       key={thread.id}

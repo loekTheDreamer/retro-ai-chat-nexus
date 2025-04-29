@@ -12,6 +12,7 @@ interface ChatState {
   clearMessages: () => void;
   updateLastAssistantMessage: (content: string) => void;
   setThreadId: (threadId: string) => void;
+  setReplaceChatHistory: (chatHistory: Message[]) => void;
 }
 
 const useChatStore = create<ChatState>()(
@@ -42,7 +43,8 @@ const useChatStore = create<ChatState>()(
           return { chatHistory: newHistory };
         });
       },
-      setThreadId: (threadId) => set({ threadId })
+      setThreadId: (threadId) => set({ threadId }),
+      setReplaceChatHistory: (chatHistory) => set({ chatHistory })
     }),
     {
       name: 'chat-storage', // unique name

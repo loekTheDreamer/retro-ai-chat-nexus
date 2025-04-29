@@ -46,9 +46,16 @@ export default {
               paddingLeft: '1.1em'
             },
             li: {
-              marginTop: '0',
-              marginBottom: '0'
+              marginTop: '0 !important',
+              marginBottom: '0 !important'
+              // lineHeight: '0'
             },
+            // 'li > *': {
+            //   display: 'inline-block',
+            //   marginTop: '0',
+            //   marginBottom: '0',
+            //   lineHeight: '1'
+            // },
             code: {
               backgroundColor: `${theme('colors.neoplay.green')} !important`,
               color: `${theme('colors.neoplay.black')} !important`,
@@ -58,7 +65,6 @@ export default {
           }
         }
       }),
-      // <-- comma added above
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
