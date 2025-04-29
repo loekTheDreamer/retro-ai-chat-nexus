@@ -15,29 +15,38 @@ export interface GameFiles {
   type: string;
 }
 
-interface CurrentGameState {
+interface VariableCurrentGameState {
   gameFiles: GameFiles[];
   updateId: number;
   currentGameId: string;
   screenshotData: string;
+}
+interface ActionsCurrentGameState {
   setGameFiles: (files: GameFiles[]) => void;
   updateGameFiles: (files: GameFiles[]) => void;
   saveFilesToDisk: (address: string, navigate: NavigateFunction) => void;
-
   deleteGame: (address?: string) => void;
   publishGame: ({ token, title }: PublishGame) => void;
   setScreenshotData: (data: string) => void;
+  resetCurrentGameStore: () => void;
+  updateCurrentGameStore: (currentGameId: string) => void;
   // setTempId: () => void;
 }
 const baseUrl = import.meta.env.VITE_BASEURL;
 
-const useCurrentGameState = create<CurrentGameState>()(
+const initialState: VariableCurrentGameState = {
+  gameFiles: [],
+  currentGameId: '',
+  updateId: 0,
+  screenshotData: ''
+};
+
+const useCurrentGameState = create<
+  VariableCurrentGameState & ActionsCurrentGameState
+>()(
   persist(
     (set, get) => ({
-      gameFiles: [],
-      currentGameId: '',
-      updateId: 0,
-      screenshotData: '',
+      ...initialState,
       setGameFiles: (files) => set({ gameFiles: files }),
       updateGameFiles: (files) =>
         set((state) => ({
@@ -111,7 +120,9 @@ const useCurrentGameState = create<CurrentGameState>()(
         set({ currentGameId: response.id });
         console.log('Game published successfully');
       },
-      setScreenshotData: (data: string) => set({ screenshotData: data })
+      setScreenshotData: (data: string) => set({ screenshotData: data }),
+      resetCurrentGameStore: () => set({ ...initialState }),
+      updateCurrentGameStore: (currentGameId) => set({ currentGameId }) // need to add files
     }),
 
     {

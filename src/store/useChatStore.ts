@@ -2,26 +2,32 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Message } from '@/types/message';
 
-interface ChatState {
-  chatHistory: Message[];
+interface VariableChatState {
   threadId: string;
+  chatHistory: Message[];
   isLoading: boolean;
-  updateIdForGamePreview: number;
+}
+interface ActionsChatState {
   addMessage: (message: Message) => void;
   setLoading: (loading: boolean) => void;
   clearMessages: () => void;
   updateLastAssistantMessage: (content: string) => void;
   setThreadId: (threadId: string) => void;
   setReplaceChatHistory: (chatHistory: Message[]) => void;
+  resetChatStore: (threadId: string) => void;
+  updateChatStore: (threadId: string, chatHistory: Message[]) => void;
 }
 
-const useChatStore = create<ChatState>()(
+const initialState: VariableChatState = {
+  threadId: '',
+  chatHistory: [],
+  isLoading: false
+};
+
+const useChatStore = create<VariableChatState & ActionsChatState>()(
   persist(
     (set) => ({
-      threadId: '',
-      chatHistory: [],
-      updateIdForGamePreview: 0,
-      isLoading: false,
+      ...initialState,
       addMessage: (message) => {
         set((state) => ({
           chatHistory: [...state.chatHistory, message]
@@ -44,8 +50,18 @@ const useChatStore = create<ChatState>()(
         });
       },
       setThreadId: (threadId) => set({ threadId }),
-      setReplaceChatHistory: (chatHistory) => set({ chatHistory })
+      setReplaceChatHistory: (chatHistory) => set({ chatHistory }),
+      resetChatStore: (threadId) => {
+        console.log('reset store threadId:', threadId);
+        set({ ...initialState, threadId });
+      },
+      updateChatStore: (threadId, chatHistory) => {
+        console.log('threadId44', threadId);
+        console.log('chatHistory', chatHistory);
+        set({ threadId, chatHistory });
+      }
     }),
+
     {
       name: 'chat-storage', // unique name
       partialize: (state) => ({

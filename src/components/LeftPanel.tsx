@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronDown, Plus, Pencil } from 'lucide-react';
-import { getUserGamesApi, updateGameNameApi } from '@/api/commonApi';
+import {
+  addThreadApi,
+  getThreadsApi,
+  getUserGamesApi,
+  updateGameNameApi
+} from '@/api/commonApi';
 import useAuthStore from '@/store/useAuthStore';
 import RenameGameModal from './RenameGameModal';
 import useChatStore from '@/store/useChatStore';
+import useCurrentGameState from '@/store/useCurrentGameState';
 
 interface GamesList {
   createdAt: string;
@@ -36,9 +42,18 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
   const [isGameModalOpen, setIsGameModalOpen] = useState(false);
   const [updatedGameName, setUpdatedGameName] = useState('');
   const [gameIdToUpdate, setGameIdToUpdate] = useState('');
+  const [onMount, setOnMount] = useState(false);
 
   const { token } = useAuthStore();
-  const { setThreadId, setReplaceChatHistory } = useChatStore();
+  const {
+    threadId,
+    setThreadId,
+    setReplaceChatHistory,
+    resetChatStore,
+    updateChatStore
+  } = useChatStore();
+  const { resetCurrentGameStore, updateCurrentGameStore } =
+    useCurrentGameState();
 
   const [expandedGames, setExpandedGames] = useState<Record<string, boolean>>({
     '1': true,
@@ -83,16 +98,36 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
   };
 
   useEffect(() => {
+    console.log('threadId:', threadId);
+    if (onMount) {
+      return;
+    }
+
     const getGames = async () => {
-      const { latestGame, gameList } = await getUserGamesApi(token);
+      console.log('gogogo');
+      const { latestGame, gameList } = await getUserGamesApi(token, threadId);
       console.log('latestGame:', latestGame);
+      console.log(
+        'latestGame.threads[0].messages: ',
+        latestGame.threads[0].messages[0]
+      );
       // console.log('gameList:', gameList);
       setGamesList(gameList);
       setThreadId(latestGame.threads[0].id); // need to return the last game on with but also a list of the games
       setReplaceChatHistory(latestGame.threads[0].messages);
+      updateCurrentGameStore(latestGame.id);
+      setOnMount(true);
     };
+
     getGames();
-  }, [setReplaceChatHistory, setThreadId, token]);
+  }, [
+    onMount,
+    setReplaceChatHistory,
+    setThreadId,
+    threadId,
+    token,
+    updateCurrentGameStore
+  ]);
 
   const handleGameRename = (newName: string) => {
     // setUpdatedGameName(newName);
@@ -103,6 +138,21 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
       return game;
     });
     setGamesList(updatedGames);
+  };
+
+  const handleAddThread = async (gameId: string) => {
+    const newThread = await addThreadApi(gameId);
+    console.log('newThread:', newThread.id);
+    resetChatStore(newThread.id);
+    resetCurrentGameStore();
+  };
+
+  const handleThreadClick = async (id: string, currentGameId: string) => {
+    const thread = await getThreadsApi(id);
+    console.log('thread:', id);
+    console.log('thread.messages22', thread.messages);
+    updateChatStore(id, thread.messages);
+    updateCurrentGameStore(currentGameId);
   };
 
   if (!isOpen) return null;
@@ -150,16 +200,19 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
 
               {expandedGames[game.id] && (
                 <div className='pl-4 border-t border-neoplay-green'>
-                  {game.threads.map((thread) => (
+                  {game.threads.map((thread, index) => (
                     <button
                       key={thread.id}
+                      onClick={() => handleThreadClick(thread.id, game.id)}
                       className='w-full text-left p-2 text-xs hover:bg-neoplay-gray border-b border-neoplay-green last:border-b-0'>
                       {thread.messages.length > 0
                         ? thread.messages[0].content
-                        : 'Talk to newPlay to update'}
+                        : `Thread #${game.threads.length - index}`}
                     </button>
                   ))}
-                  <button className='w-full text-left p-2 text-xs text-neoplay-darkGreen hover:bg-neoplay-gray flex items-center'>
+                  <button
+                    className='w-full text-left p-2 text-xs text-neoplay-darkGreen hover:bg-neoplay-gray flex items-center'
+                    onClick={() => handleAddThread(game.id)}>
                     <Plus size={12} className='mr-1' />
                     <span>NEW THREAD</span>
                   </button>

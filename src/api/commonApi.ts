@@ -229,9 +229,10 @@ export const uploadCoverImage = async (file: File): Promise<string> => {
   }
 };
 
-export const getUserGamesApi = async (token: string) => {
+export const getUserGamesApi = async (token: string, threadId: string) => {
+  console.log('threadId sending to api:', threadId);
   try {
-    const response = await fetch(`${baseURL}/game/user`, {
+    const response = await fetch(`${baseURL}/game/user?threadId=${threadId}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -267,5 +268,49 @@ export const updateGameNameApi = async (newName: string, gameId: string) => {
     return response.json();
   } catch (error) {
     console.error('Error updating game name:', error);
+  }
+};
+
+export const addThreadApi = async (gameId: string) => {
+  const token = useAuthStore.getState().token;
+
+  try {
+    const response = await fetch(`${baseURL}/game/thread`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ gameId })
+    });
+    if (!response.ok) {
+      throw new Error('Failed to add thread');
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error adding thread:', error);
+  }
+};
+
+export const getThreadsApi = async (id: string) => {
+  const token = useAuthStore.getState().token;
+
+  try {
+    const response = await fetch(`${baseURL}/game/thread?id=${id}`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Failed to get threads');
+    }
+    const thread = await response.json();
+    return thread;
+  } catch (error) {
+    console.error('Error getting threads:', error);
   }
 };
