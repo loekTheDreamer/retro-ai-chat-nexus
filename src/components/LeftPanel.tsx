@@ -10,6 +10,7 @@ interface GamesList {
   id: string;
   name: string;
   status: string;
+  threads: Thread[];
 }
 
 interface Message {
@@ -149,7 +150,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
               {expandedGames[game.id] && (
                 <div className='pl-4 border-t border-neoplay-green'>
                   {/* TODO: send the first message from the thread */}
-                  {games.map((thread) => (
+                  {game.threads.map((thread) => (
                     <button
                       key={thread.id}
                       className='w-full text-left p-2 text-xs hover:bg-neoplay-gray border-b border-neoplay-green last:border-b-0'>
