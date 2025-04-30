@@ -11,6 +11,7 @@ import useAuthStore from '@/store/useAuthStore';
 import RenameGameModal from './RenameGameModal';
 import useChatStore from '@/store/useChatStore';
 import useCurrentGameState from '@/store/useCurrentGameState';
+import { toast } from 'sonner';
 
 interface GamesList {
   createdAt: string;
@@ -143,7 +144,13 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
 
   const handleAddThread = async (gameId: string) => {
     const newThread = await addThreadApi(gameId);
-    console.log('newThread:', newThread.id);
+
+    if (newThread.id === undefined) {
+      toast.error('your already have a perfectly good thread at your disposal');
+      return;
+    }
+    console.log('newThread.id:', newThread.id);
+    console.log('what the fuck');
     resetChatStore(newThread.id);
     resetCurrentGameStore();
   };

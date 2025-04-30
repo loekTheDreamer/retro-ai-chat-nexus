@@ -17,7 +17,7 @@ const App = () => (
   <WagmiProvider config={config}>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster position='top-center' />
+        <Toaster position='top-center' duration={5000} />
         <BrowserRouter>
           <Routes>
             <Route path='/' element={<Index />} />
