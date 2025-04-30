@@ -100,7 +100,6 @@ export const AgentBubble: React.FC<AgentBubbleProps> = ({
       console.log('commentError:', commentError);
       return;
     }
-
     const { before, files, after } = extractCode(content);
 
     setBeforeCode(before);

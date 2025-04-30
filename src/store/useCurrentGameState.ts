@@ -62,7 +62,7 @@ const useCurrentGameState = create<
 
         const result = await saveFilesToDiskApi({
           gameFiles,
-          token
+          gameId: get().currentGameId
         });
         if (!result) {
           return;
@@ -122,7 +122,7 @@ const useCurrentGameState = create<
       },
       setScreenshotData: (data: string) => set({ screenshotData: data }),
       resetCurrentGameStore: () => set({ ...initialState }),
-      updateCurrentGameStore: (currentGameId) => set({ currentGameId }) // need to add files
+      updateCurrentGameStore: (currentGameId) => set({ currentGameId })
     }),
 
     {

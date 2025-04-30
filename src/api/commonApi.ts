@@ -17,14 +17,14 @@ export interface PublishGame {
 
 interface SaveFilesToDisk {
   gameFiles: GameFiles[];
-  token: string;
+  gameId: string;
 }
 
 export const saveFilesToDiskApi = async ({
   gameFiles,
-  token
+  gameId
 }: SaveFilesToDisk) => {
-  // Find the file with filename 'index.html'
+  const token = useAuthStore.getState().token;
 
   // Immutably update the code property of index.html, if present
   const updatedGameFiles = Array.isArray(gameFiles)
@@ -113,7 +113,7 @@ export const saveFilesToDiskApi = async ({
         'Content-Type': 'application/json',
         authorization: 'Bearer ' + token
       },
-      body: JSON.stringify({ gameFiles: updatedGameFiles })
+      body: JSON.stringify({ gameFiles: updatedGameFiles, gameId })
     });
 
     if (response.status === 401) {
@@ -336,5 +336,29 @@ export const createNewGame = async () => {
     return response.json();
   } catch (error) {
     console.error('Error creating game:', error);
+  }
+};
+
+export const createGameFilesApi = async (gameId: string) => {
+  const token = useAuthStore.getState().token;
+  try {
+    console.log('Creating game files');
+
+    const response = await fetch(`${baseURL}/files/create`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ gameId })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to create game files');
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error creating game files:', error);
   }
 };

@@ -4,6 +4,8 @@ import { Textarea } from '@/components/ui/textarea';
 import useXaiChatHistory from '@/hooks/useXaiChatHistory';
 import { ChatContainer } from './ChatContainer';
 import useChatStore from '@/store/useChatStore';
+import { createGameFilesApi } from '@/api/commonApi';
+import useCurrentGameState from '@/store/useCurrentGameState';
 
 interface ChatMessage {
   id: number;
@@ -30,6 +32,7 @@ const ChatInterface = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { clearMessages } = useChatStore();
+  const { currentGameId } = useCurrentGameState();
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -91,7 +94,7 @@ const ChatInterface = () => {
           </button>
         </div>
         <button
-          onClick={clearMessages}
+          onClick={() => createGameFilesApi(currentGameId)}
           className='absolute right-2 top-1/2 -translate-y-1/2 p-2 text-neoplay-green hover:text-neoplay-darkGreen disabled:opacity-50'>
           <RefreshCw size={20} />
         </button>
