@@ -1,6 +1,7 @@
 import { getPublishedGamesApi } from '@/api/commonApi';
 import { useCallback, useEffect, useState } from 'react';
 import PlayGameModal from './PlayGameModal';
+import { Heart, Play } from 'lucide-react';
 
 const VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN = import.meta.env
   .VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN;
@@ -67,14 +68,14 @@ const PublishedGames = () => {
             className='border-2 border-neoplay-green p-4 hover:bg-neoplay-gray cursor-pointer transition-colors'>
             <h2 className='font-pixel text-lg'>{game.name}</h2>
 
-            <div className='h-32 bg-neoplay-gray mt-2 flex items-center justify-center'>
+            <div className='h-48 bg-neoplay-gray mt-2 flex items-center justify-center'>
               <img
                 // src={`${VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN}/published/${game.id}/img/coverImage.png`}
                 src={`https://${VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN}/published/${
                   game.id
                 }/img/coverImage.png?${Date.now()}`}
                 alt='Game Cover'
-                className='max-h-32 object-contain'
+                className='max-h-48 object-contain'
               />
 
               {/* <span className='font-pixel text-sm'>GAME PREVIEW</span> */}
@@ -87,7 +88,23 @@ const PublishedGames = () => {
                 BY: {game.publisher.walletAddress.slice(2, 6)}...
                 {game.publisher.walletAddress.slice(-4)}
               </span>
-              <span>PLAYS: {game.plays.toLocaleString()}</span>
+            </div>
+            <div className='flex justify-between items-center mt-4 text-xs'>
+              <span className='inline-flex items-center gap-1'>
+                <Play
+                  className='w-4 h-4 text-neoplay-green'
+                  fill='currentColor'
+                />
+                {game.plays.toLocaleString()}
+              </span>
+
+              <span className='inline-flex items-center gap-1'>
+                <Heart
+                  className='w-4 h-4 text-neoplay-green'
+                  fill='currentColor'
+                />
+                {game.likes ?? 0}
+              </span>
             </div>
 
             <button

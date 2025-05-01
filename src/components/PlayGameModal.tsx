@@ -24,12 +24,12 @@ const PlayGameModal = ({
       <DialogContent
         className='bg-neoplay-black border-2 border-neoplay-green'
         style={{
-          width: 650,
-          height: 650,
+          // width: 650,
+          // height: 650,
           minWidth: 650,
           minHeight: 650,
-          maxWidth: 650,
-          maxHeight: 650,
+          // maxWidth: 650,
+          // maxHeight: 650,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -42,18 +42,34 @@ const PlayGameModal = ({
         </DialogHeader>
         <div
           className='border-2 border-neoplay-green rounded overflow-hidden inline-block'
-          style={{ width: 600, height: 600 }}>
+          style={{ width: 600, height: 600, maxWidth: 600, maxHeight: 600 }}>
           <iframe
             src={currentGameURL}
             width='600'
             height='600'
-            style={{ border: 0, display: 'block', width: 600, height: 600 }}
+            style={{
+              border: 0,
+              display: 'block',
+              width: 600,
+              height: 600,
+              maxWidth: 600,
+              maxHeight: 600
+            }}
             allowFullScreen
           />
         </div>
         <Button
           // onClick={() => connect({ connector })}
-          className='retro-btn flex items-center justify-start gap-2 w-full'>
+          className='retro-btn items-center justify-center gap-2 w-full'
+          // className='retro-btn items-center justify-start gap-2'
+        >
+          close
+        </Button>
+        <Button
+          // onClick={() => connect({ connector })}
+          className='retro-btn items-center justify-center gap-2 w-full'
+          // className='retro-btn items-center justify-start gap-2'
+        >
           like
         </Button>
       </DialogContent>
