@@ -10,8 +10,11 @@ export interface PublishedGame {
 }
 
 export interface PublishGame {
-  token: string;
-  title: string;
+  name: string;
+  genre: string;
+  description: string;
+  tags: string;
+  coverImage: string;
   id: string;
 }
 
@@ -170,14 +173,23 @@ export const serveCurrentGameApi = async (address: string) => {
   }
 };
 
-export const publishGameApi = async ({ token, title, id }: PublishGame) => {
+export const publishGameApi = async ({
+  id,
+  name,
+  genre,
+  description,
+  tags,
+  coverImage
+}: PublishGame) => {
+  const token = useAuthStore.getState().token;
   try {
     const response = await fetch(`${baseURL}/publish`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        authorization: 'Bearer ' + token
       },
-      body: JSON.stringify({ token, title, id })
+      body: JSON.stringify({ id, name, genre, description, tags, coverImage })
     });
     if (!response.ok) {
       throw new Error('Failed to publish game');

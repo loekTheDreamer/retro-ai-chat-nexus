@@ -1,9 +1,5 @@
 import { create } from 'zustand';
-import {
-  PublishGame,
-  publishGameApi,
-  saveFilesToDiskApi
-} from '@/api/commonApi';
+import { saveFilesToDiskApi } from '@/api/commonApi';
 import { useIframeErrorStore } from '@/store/useIframeErrorStore';
 import { NavigateFunction } from 'react-router-dom';
 import { logoutUnauthorized } from '@/helpers/logout';
@@ -25,10 +21,11 @@ interface ActionsCurrentGameState {
   updateGameFiles: (files: GameFiles[]) => void;
   saveFilesToDisk: (address: string, navigate: NavigateFunction) => void;
   deleteGame: (address?: string) => void;
-  publishGame: ({ token, title }: PublishGame) => void;
   setScreenshotData: (data: string) => void;
   resetCurrentGameStore: () => void;
   updateCurrentGameStore: (currentGameId: string) => void;
+  setUpdateId: (updateId: number) => void;
+  increaseUpdateId: () => void;
   // setTempId: () => void;
 }
 const baseUrl = import.meta.env.VITE_BASEURL;
@@ -96,32 +93,11 @@ const useCurrentGameState = create<
           console.error('Error deleting game:', error);
         }
       },
-      publishGame: async ({ token, title }: PublishGame) => {
-        console.log('publishing game', token, title);
-
-        if (!token || !title) {
-          throw new Error('Missing token or title');
-        }
-
-        console.log('currentGameId:', get().currentGameId);
-
-        const theId = get().currentGameId;
-
-        const response = await publishGameApi({
-          token,
-          title,
-          id: theId
-        });
-
-        if (!response) {
-          throw new Error('Failed to publish game');
-        }
-        set({ currentGameId: response.id });
-        console.log('Game published successfully');
-      },
       setScreenshotData: (data: string) => set({ screenshotData: data }),
       resetCurrentGameStore: () => set({ ...initialState }),
-      updateCurrentGameStore: (currentGameId) => set({ currentGameId })
+      updateCurrentGameStore: (currentGameId) => set({ currentGameId }),
+      setUpdateId: (updateId) => set({ updateId }),
+      increaseUpdateId: () => set((state) => ({ updateId: state.updateId + 1 }))
     }),
 
     {

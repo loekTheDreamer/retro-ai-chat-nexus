@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import useCurrentGameState from '@/store/useCurrentGameState';
+import { publishGameApi } from '@/api/commonApi';
 
 export function PublishTab() {
   const [formData, setFormData] = useState({
@@ -16,7 +17,7 @@ export function PublishTab() {
     coverImage: ''
   });
 
-  const { screenshotData } = useCurrentGameState();
+  const { screenshotData, currentGameId } = useCurrentGameState();
 
   useEffect(() => {
     if (screenshotData) {
@@ -44,15 +45,24 @@ export function PublishTab() {
     }
 
     try {
-      console.log('Form submitted:', formData);
-      // Reset form after submission
-      setFormData({
-        name: '',
-        genre: '',
-        description: '',
-        tags: '',
-        coverImage: ''
+      const response = await publishGameApi({
+        ...formData,
+        id: currentGameId
       });
+      console.log('response', response);
+
+      if (response.published === true) {
+        toast.success('Game published successfully');
+        setFormData({
+          name: '',
+          genre: '',
+          description: '',
+          tags: '',
+          coverImage: ''
+        });
+        return;
+      }
+      toast.error('Failed to publish game');
     } catch (error) {
       console.error('Failed to submit form');
       console.error(error);
@@ -70,7 +80,7 @@ export function PublishTab() {
         <CardContent>
           <form onSubmit={handleSubmit} className='space-y-4'>
             <div className='grid gap-2 text-neoplay-green'>
-              <Label htmlFor='name'>Game Name</Label>
+              <Label htmlFor='name'>Game Title</Label>
               <Input
                 id='name'
                 name='name'
@@ -79,7 +89,7 @@ export function PublishTab() {
                 required
                 placeholder='Enter game title'
                 className='placeholder:text-gray-500'
-                autoComplete='off'
+                // autoComplete='off'
               />
             </div>
             <div className='grid gap-2 text-neoplay-green'>
@@ -92,7 +102,7 @@ export function PublishTab() {
                 required
                 placeholder='Enter game genre'
                 className='placeholder:text-gray-500'
-                autoComplete='off'
+                // autoComplete='off'
               />
             </div>
             <div className='grid gap-2 text-neoplay-green'>
@@ -105,7 +115,7 @@ export function PublishTab() {
                 required
                 placeholder='Describe your game'
                 className='min-h-[100px] placeholder:text-gray-500'
-                autoComplete='off'
+                // autoComplete='off'
               />
             </div>
             <div className='mb-4'>
@@ -135,7 +145,7 @@ export function PublishTab() {
                 onChange={handleChange}
                 placeholder='action, adventure, rpg'
                 className='placeholder:text-gray-500'
-                autoComplete='off'
+                // autoComplete='off'
               />
             </div>
             <Button

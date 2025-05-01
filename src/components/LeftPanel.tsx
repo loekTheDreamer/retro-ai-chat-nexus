@@ -42,8 +42,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     resetChatStore,
     updateChatStore
   } = useChatStore();
-  const { resetCurrentGameStore, updateCurrentGameStore } =
-    useCurrentGameState();
+  const { increaseUpdateId, updateCurrentGameStore } = useCurrentGameState();
 
   const [expandedGames, setExpandedGames] = useState<Record<string, boolean>>({
     '1': true,
@@ -166,10 +165,11 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
   const handleThreadClick = async (id: string, currentGameId: string) => {
     const thread = await getThreadsApi(id);
     console.log('thread:', id);
-    console.log('thread.messages22', thread.messages);
+    console.log('thread.messages22', thread);
     updateChatStore(id, thread.messages);
     console.log('currentGameId!!!!!', currentGameId);
     updateCurrentGameStore(currentGameId);
+    increaseUpdateId();
   };
 
   const handleCreateNewGame = async () => {
