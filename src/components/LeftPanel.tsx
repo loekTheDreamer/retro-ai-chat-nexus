@@ -226,7 +226,9 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
             key={thread.id}
             onClick={() => handleThreadClick(thread.id, game.id)}
             className='w-full text-left p-2 text-xs hover:bg-neoplay-gray border-b border-neoplay-green last:border-b-0'>
-            {thread.messages[0].content}
+            {thread.messages[0].content.length > 47
+              ? thread.messages[0].content.slice(0, 47).trim() + '...'
+              : thread.messages[0].content}
           </button>
         );
       }
@@ -238,7 +240,9 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
             key={thread.id}
             onClick={() => handleThreadClick(thread.id, game.id)}
             className='w-full text-left p-2 text-xs hover:bg-neoplay-gray border-b border-neoplay-green last:border-b-0'>
-            {thread.messages[1].content}
+            {thread.messages[1].content.length > 47
+              ? thread.messages[1].content.slice(0, 47).trim() + '...'
+              : thread.messages[1].content}
           </button>
         );
       }

@@ -1,4 +1,7 @@
 import { create } from 'zustand';
+import { v4 as uuidv4 } from 'uuid';
+import useChatStore from './useChatStore';
+import useCurrentGameState from './useCurrentGameState';
 
 interface Message {
   id: string;
@@ -45,6 +48,7 @@ interface ActionsGamesListStore {
   setGamesList: (gamesList: GamesList[]) => void;
   addThreadToGame: (gameId: string, threadId: string) => void;
   addGameToGamesList: (newGame: GameWithThread) => void;
+  updateThreadMessage: (message: string) => void;
 }
 
 const useGamesListStore = create<
@@ -86,7 +90,40 @@ const useGamesListStore = create<
         },
         ...state.gamesList
       ]
-    }))
+    })),
+  updateThreadMessage: (message) => {
+    const { threadId } = useChatStore.getState();
+    const { currentGameId } = useCurrentGameState.getState();
+    set((state) => ({
+      gamesList: state.gamesList.map((game) => {
+        if (game.id === currentGameId) {
+          return {
+            ...game,
+            threads: game.threads.map((thread) => {
+              if (thread.id === threadId) {
+                return {
+                  ...thread,
+                  messages: [
+                    ...thread.messages,
+                    {
+                      id: uuidv4(),
+                      createdAt: new Date().toISOString(),
+                      content: message,
+                      sender: 'user',
+                      isUser: true,
+                      role: 'user'
+                    }
+                  ]
+                };
+              }
+              return thread;
+            })
+          };
+        }
+        return game;
+      })
+    }));
+  }
 }));
 
 export default useGamesListStore;

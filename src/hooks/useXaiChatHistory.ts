@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import useAuthStore from '@/store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
+import useGamesListStore from '@/store/useGamesListStore';
 
 const useXaiChatHistory = () => {
   //   const [chatHistory, setChatHistory] = useState<Message[]>([]);
@@ -27,7 +28,7 @@ const useXaiChatHistory = () => {
     updateLastAssistantMessage
   } = useChatStore();
   const { saveFilesToDisk } = useCurrentGameState();
-
+  const { updateThreadMessage } = useGamesListStore();
   // const { setError } = useErrorDetectedStore();
   useEffect(() => {
     console.log('chatHistory: ', chatHistory);
@@ -63,8 +64,9 @@ const useXaiChatHistory = () => {
     try {
       let accumulatedContent = '';
 
-      if (chatHistory.length === 0) {
+      if (chatHistory.length === 0 || chatHistory.length === 1) {
         // input to thread name
+        updateThreadMessage(input);
       }
       xaiStreamEvent({
         chatHistory: chatHistory.concat(newUserMessage),
