@@ -152,7 +152,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     }
     console.log('codeBlocks', codeBlocks);
     resetChatStore(id, codeBlocks);
-    resetCurrentGameStore();
+    updateCurrentGameStore(gameId);
     setGamesList((prev) => {
       return prev.map((game) => {
         if (game.id === gameId) {
@@ -193,7 +193,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
       return;
     }
     resetChatStore(newGame.threads[0].id);
-    resetCurrentGameStore();
+    updateCurrentGameStore(newGame.id);
 
     setGamesList((prev) => [
       {
