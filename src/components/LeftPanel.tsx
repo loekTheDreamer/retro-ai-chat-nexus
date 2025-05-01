@@ -27,6 +27,7 @@ interface Message {
   content: string;
   sender: string;
   isUser: boolean;
+  role: string;
 }
 
 interface Thread {
@@ -109,11 +110,11 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
       console.log('gogogo');
       const { latestGame, gameList } = await getUserGamesApi(token, threadId);
       console.log('latestGame:', latestGame);
-      console.log(
-        'latestGame.threads[0].messages: ',
-        latestGame.threads[0].messages[0]
-      );
-      // console.log('gameList:', gameList);
+      // console.log(
+      //   'latestGame.threads[0].messages: ',
+      //   latestGame.threads[0].messages[0].role
+      // );
+      console.log('gameList:', gameList);
       setGamesList(gameList);
       setThreadId(latestGame.threads[0].id); // need to return the last game on with but also a list of the games
       setReplaceChatHistory(latestGame.threads[0].messages);
@@ -143,15 +144,14 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
   };
 
   const handleAddThread = async (gameId: string) => {
-    const newThread = await addThreadApi(gameId);
+    const { id, codeBlocks } = await addThreadApi(gameId);
 
-    if (newThread.id === undefined) {
+    if (id === undefined) {
       toast.error('your already have a perfectly good thread at your disposal');
       return;
     }
-    console.log('newThread.id:', newThread.id);
-    console.log('what the fuck');
-    resetChatStore(newThread.id);
+    console.log('codeBlocks', codeBlocks);
+    resetChatStore(id, codeBlocks);
     resetCurrentGameStore();
   };
 
@@ -160,6 +160,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     console.log('thread:', id);
     console.log('thread.messages22', thread.messages);
     updateChatStore(id, thread.messages);
+    console.log('currentGameId!!!!!', currentGameId);
     updateCurrentGameStore(currentGameId);
   };
 
@@ -168,6 +169,52 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     console.log('newGame:', newGame);
     resetChatStore(newGame.threads[0].id);
     resetCurrentGameStore();
+  };
+
+  const handleOpenGame = (game: GamesList) => {
+    const threadDiv = game.threads.map((thread, index) => {
+      console.log('creating thread names:', thread.messages);
+      if (
+        thread.messages.length === 0 ||
+        (thread.messages[0].role === 'assistant' &&
+          thread.messages.length === 0)
+      ) {
+        console.log('test::', thread.messages.length);
+        return (
+          <button
+            key={thread.id}
+            onClick={() => handleThreadClick(thread.id, game.id)}
+            className='w-full text-left p-2 text-xs hover:bg-neoplay-gray border-b border-neoplay-green last:border-b-0'>
+            {`Thread #${game.threads.length - index}`}
+          </button>
+        );
+      }
+
+      if (thread.messages.length > 0 && thread.messages[0].role == 'user') {
+        console.log('this should have trigger');
+        return (
+          <button
+            key={thread.id}
+            onClick={() => handleThreadClick(thread.id, game.id)}
+            className='w-full text-left p-2 text-xs hover:bg-neoplay-gray border-b border-neoplay-green last:border-b-0'>
+            {thread.messages[0].content}
+          </button>
+        );
+      }
+
+      // if (thread.messages.length > 0 && thread.messages[1].role !== 'user') {
+      //   return (
+      //     <button
+      //       key={thread.id}
+      //       onClick={() => handleThreadClick(thread.id, game.id)}
+      //       className='w-full text-left p-2 text-xs hover:bg-neoplay-gray border-b border-neoplay-green last:border-b-0'>
+      //       {thread.messages[0].content}
+      //     </button>
+      //   );
+      // }
+    });
+
+    return threadDiv;
   };
 
   if (!isOpen) return null;
@@ -215,16 +262,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
 
               {expandedGames[game.id] && (
                 <div className='pl-4 border-t border-neoplay-green'>
-                  {game.threads.map((thread, index) => (
-                    <button
-                      key={thread.id}
-                      onClick={() => handleThreadClick(thread.id, game.id)}
-                      className='w-full text-left p-2 text-xs hover:bg-neoplay-gray border-b border-neoplay-green last:border-b-0'>
-                      {thread.messages.length > 0
-                        ? thread.messages[0].content
-                        : `Thread #${game.threads.length - index}`}
-                    </button>
-                  ))}
+                  {handleOpenGame(game)}
                   <button
                     className='w-full text-left p-2 text-xs text-neoplay-darkGreen hover:bg-neoplay-gray flex items-center'
                     onClick={() => handleAddThread(game.id)}>

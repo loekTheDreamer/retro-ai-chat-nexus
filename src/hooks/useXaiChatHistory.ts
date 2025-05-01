@@ -30,6 +30,7 @@ const useXaiChatHistory = () => {
 
   // const { setError } = useErrorDetectedStore();
   useEffect(() => {
+    console.log('chatHistory: ', chatHistory);
     // console.log('chatHistory: ', chatHistory[chatHistory.length - 1].content);
   }, [chatHistory]);
 

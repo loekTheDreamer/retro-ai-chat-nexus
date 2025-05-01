@@ -21,34 +21,36 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
   // console.log('isloading', isLoading);
   return (
     <div className='flex-1 overflow-y-auto p-6 chat-container space-y-4'>
-      {messages.map((msg) => (
-        <div
-          key={msg.id} // <-- This is the correct place!
-          className={`flex ${
-            msg.role === 'user' ? 'justify-end' : 'justify-start w-full'
-          }`}>
-          <div
-            className={`px-4 py-2 rounded-sm ${
-              msg.role === 'user'
-                ? 'bg-neoplay-gray text-white max-w-[80%] pb-1'
-                : 'bg-neoplay-darkGreen bg-opacity-20 border border-neoplay-green text-neoplay-green w-full'
-            }`}>
-            <div className='whitespace-pre-wrap'>
-              {msg.role === 'user' ? (
-                msg.content
-              ) : (
-                <AgentBubble
-                  content={msg.content}
-                  // setChatHistory={setChatHistory}
-                  messageCount={0}
-                />
-              )}
-            </div>
-
-            <div className='text-xs text-gray-400 mt-1'></div>
-          </div>
+      {messages.map((msg, index) => {
+  if (msg.role === 'assistant' && index === 0) return null;
+  return (
+    <div
+      key={msg.id} // <-- This is the correct place!
+      className={`flex ${
+        msg.role === 'user' ? 'justify-end' : 'justify-start w-full'
+      }`}>
+      <div
+        className={`px-4 py-2 rounded-sm ${
+          msg.role === 'user'
+            ? 'bg-neoplay-gray text-white max-w-[80%] pb-1'
+            : 'bg-neoplay-darkGreen bg-opacity-20 border border-neoplay-green text-neoplay-green w-full'
+        }`}>
+        <div className='whitespace-pre-wrap'>
+          {msg.role === 'user' ? (
+            msg.content
+          ) : (
+            <AgentBubble
+              content={msg.content}
+              // setChatHistory={setChatHistory}
+              messageCount={0}
+            />
+          )}
         </div>
-      ))}
+        <div className='text-xs text-gray-400 mt-1'></div>
+      </div>
+    </div>
+  );
+})}
       {isLoading && (
         <div className='flex justify-start w-full' aria-label='Loading'>
           <svg

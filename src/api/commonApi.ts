@@ -104,7 +104,7 @@ export const saveFilesToDiskApi = async ({
 
   // Use updatedGameFiles in the request below
   console.log('gameFiles', updatedGameFiles);
-  console.log('sending files to server');
+  console.log('sending files to server with gameId:', gameId);
 
   try {
     const response = await fetch(`${baseURL}/game/save`, {

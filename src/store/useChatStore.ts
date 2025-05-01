@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Message } from '@/types/message';
+import { v4 as uuidv4 } from 'uuid';
 
 interface VariableChatState {
   threadId: string;
@@ -14,7 +15,7 @@ interface ActionsChatState {
   updateLastAssistantMessage: (content: string) => void;
   setThreadId: (threadId: string) => void;
   setReplaceChatHistory: (chatHistory: Message[]) => void;
-  resetChatStore: (threadId: string) => void;
+  resetChatStore: (threadId: string, codeBlocks?: string) => void;
   updateChatStore: (threadId: string, chatHistory: Message[]) => void;
 }
 
@@ -51,9 +52,16 @@ const useChatStore = create<VariableChatState & ActionsChatState>()(
       },
       setThreadId: (threadId) => set({ threadId }),
       setReplaceChatHistory: (chatHistory) => set({ chatHistory }),
-      resetChatStore: (threadId) => {
+      resetChatStore: (threadId, codeBlocks) => {
         console.log('reset store threadId:', threadId);
         set({ ...initialState, threadId });
+        if (codeBlocks) {
+          set({
+            chatHistory: [
+              { id: uuidv4(), role: 'assistant', content: codeBlocks }
+            ]
+          });
+        }
       },
       updateChatStore: (threadId, chatHistory) => {
         console.log('threadId44', threadId);
