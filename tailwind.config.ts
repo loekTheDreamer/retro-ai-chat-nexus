@@ -21,8 +21,14 @@ export default {
     },
     extend: {
       typography: ({ theme }) => ({
+        DEFAULT: {
+          css: {
+            maxWidth: '100%'
+          }
+        },
         invert: {
           css: {
+            maxWidth: '100%',
             '--tw-prose-body': theme('colors.neoplay.green'),
             '--tw-prose-headings': theme('colors.neoplay.green'),
             '--tw-prose-links': theme('colors.neoplay.green'),

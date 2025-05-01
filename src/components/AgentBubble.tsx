@@ -65,6 +65,11 @@ ace.define(
     .ace-mycustom .ace_line {
       color: #4AFF00 !important;
     }
+    .ace-mycustom .ace_marker-layer .ace_selection {
+      background: #0A0A0A !important;
+      color: #4AFF00 !important;
+
+    }
     `;
     const dom = require('../lib/dom');
     dom.importCssString(exports.cssText, exports.cssClass);
