@@ -32,8 +32,12 @@ const PublishedGames = () => {
     try {
       const response = await getPublishedGamesApi();
       if (response.publishedGames) {
+        const one = response.publishedGames[0];
+        const two = response.publishedGames[0];
+        const three = response.publishedGames[0];
         console.log('response', response);
-        setGames(response.publishedGames);
+        // setGames(response.publishedGames);
+        setGames([one, two, three, one, two, three]);
       }
     } catch (error) {
       console.error('Error fetching user games:', error);
@@ -59,9 +63,9 @@ const PublishedGames = () => {
 
   return (
     <div className='h-full overflow-auto p-6'>
-      <h1 className='font-pixel text-2xl mb-6'>PUBLISHED GAMES</h1>
+      {/* <h1 className='font-pixel text-2xl mb-6 text-center'>PUBLISHED GAMES</h1> */}
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-4 gap-6'>
         {games.map((game) => (
           <div
             key={game.id}
