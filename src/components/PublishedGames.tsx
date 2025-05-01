@@ -65,7 +65,7 @@ const PublishedGames = () => {
     <div className='h-full overflow-auto p-6'>
       {/* <h1 className='font-pixel text-2xl mb-6 text-center'>PUBLISHED GAMES</h1> */}
 
-      <div className='grid grid-cols-1 md:grid-cols-4 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
         {games.map((game) => (
           <div
             key={game.id}
