@@ -153,6 +153,25 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     console.log('codeBlocks', codeBlocks);
     resetChatStore(id, codeBlocks);
     resetCurrentGameStore();
+    setGamesList((prev) => {
+      return prev.map((game) => {
+        if (game.id === gameId) {
+          // Add the new thread to the correct game
+          return {
+            ...game,
+            threads: [
+              {
+                id,
+                createdAt: new Date().toISOString(),
+                messages: []
+              },
+              ...game.threads
+            ]
+          };
+        }
+        return game;
+      });
+    });
   };
 
   const handleThreadClick = async (id: string, currentGameId: string) => {
