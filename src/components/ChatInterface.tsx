@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, RefreshCw } from 'lucide-react';
+import {
+  Send
+  // RefreshCw
+} from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import useXaiChatHistory from '@/hooks/useXaiChatHistory';
 import { ChatContainer } from './ChatContainer';
@@ -93,11 +96,11 @@ const ChatInterface = () => {
             <Send size={20} />
           </button>
         </div>
-        <button
+        {/* <button
           onClick={() => createGameFilesApi(currentGameId)}
           className='absolute right-2 top-1/2 -translate-y-1/2 p-2 text-neoplay-green hover:text-neoplay-darkGreen disabled:opacity-50'>
           <RefreshCw size={20} />
-        </button>
+        </button> */}
       </div>
     </div>
   );

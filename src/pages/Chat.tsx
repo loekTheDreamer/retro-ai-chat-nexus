@@ -77,7 +77,9 @@ const Chat = () => {
             {userMenuOpen && (
               <div className='absolute right-0 mt-2 w-48 pixel-borders bg-neoplay-black z-50'>
                 <div className='p-2 border-b border-neoplay-green'>
-                  <p className='font-mono text-xs truncate'>USER: 0x{address.slice(2, 6)}...{address.slice(-4)}</p>
+                  <p className='font-mono text-xs truncate'>
+                    USER: 0x{address.slice(2, 6)}...{address.slice(-4)}
+                  </p>
                 </div>
                 <button
                   onClick={handleLogout}

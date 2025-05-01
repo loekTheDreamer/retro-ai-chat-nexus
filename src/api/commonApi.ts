@@ -374,3 +374,24 @@ export const createGameFilesApi = async (gameId: string) => {
     console.error('Error creating game files:', error);
   }
 };
+
+export const getPublishedGamesApi = async () => {
+  const token = useAuthStore.getState().token;
+  try {
+    console.log('Getting published games');
+    const response = await fetch(`${baseURL}/publish`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) {
+      throw new Error('Failed to get published games');
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error getting published games:', error);
+  }
+};

@@ -1,52 +1,60 @@
-import { useState } from 'react';
+import { getPublishedGamesApi } from '@/api/commonApi';
+import { useCallback, useEffect, useState } from 'react';
+import PlayGameModal from './PlayGameModal';
+
+const VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN = import.meta.env
+  .VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN;
 
 interface Game {
   id: string;
-  title: string;
+  name: string;
   description: string;
-  author: string;
+  publisher: {
+    walletAddress: string;
+  };
   plays: number;
+  genre: string;
+  tags: string[];
 }
 
 const PublishedGames = () => {
-  const [games, setGames] = useState<Game[]>([
-    {
-      id: '1',
-      title: 'CYBER QUEST',
-      description: 'A cyberpunk adventure through a neon city.',
-      author: 'PlayerOne',
-      plays: 1243
-    },
-    {
-      id: '2',
-      title: 'DUNGEON CRAWLER',
-      description:
-        'Explore procedurally generated dungeons filled with monsters and treasures.',
-      author: 'RetroGamer',
-      plays: 876
-    },
-    {
-      id: '3',
-      title: 'SPACE COMMANDER',
-      description: 'Command your fleet in epic space battles.',
-      author: 'StarExplorer',
-      plays: 2134
-    },
-    {
-      id: '4',
-      title: 'PIXEL RACER',
-      description: 'High-speed racing with pixel art aesthetics.',
-      author: 'SpeedRunner',
-      plays: 543
-    },
-    {
-      id: '5',
-      title: 'ZOMBIE SURVIVAL',
-      description: 'Survive waves of zombies in this intense action game.',
-      author: 'BrainEater',
-      plays: 1587
+  const [onMount, setOnMount] = useState(false);
+  const [isPlayGameModalOpen, setIsPlayGameModalOpen] = useState(false);
+  const [selectedGameUrl, setSelectedGameUrl] = useState<string | null>(null);
+  const [selectedGameTitle, setSelectedGameTitle] = useState<string | null>(
+    null
+  );
+  const [games, setGames] = useState<Game[]>([]);
+
+  const fetchPublishedGames = useCallback(async () => {
+    console.log('fetching published games');
+    try {
+      const response = await getPublishedGamesApi();
+      if (response.publishedGames) {
+        console.log('response', response);
+        setGames(response.publishedGames);
+      }
+    } catch (error) {
+      console.error('Error fetching user games:', error);
     }
-  ]);
+  }, []);
+
+  useEffect(() => {
+    // if (!onMount) return;
+
+    fetchPublishedGames();
+    // setOnMount(true);
+  }, [fetchPublishedGames]);
+
+  const handlePlayGame = (gameId: string, gameTitle: string) => {
+    // title={game.name}
+    // currentGameURL={game.url}
+    setSelectedGameTitle(gameTitle);
+    setSelectedGameUrl(
+      `https://${VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN}/published/${gameId}/index.html`
+    );
+    setIsPlayGameModalOpen(true);
+  };
 
   return (
     <div className='h-full overflow-auto p-6'>
@@ -57,25 +65,45 @@ const PublishedGames = () => {
           <div
             key={game.id}
             className='border-2 border-neoplay-green p-4 hover:bg-neoplay-gray cursor-pointer transition-colors'>
-            <h2 className='font-pixel text-lg'>{game.title}</h2>
+            <h2 className='font-pixel text-lg'>{game.name}</h2>
 
             <div className='h-32 bg-neoplay-gray mt-2 flex items-center justify-center'>
-              <span className='font-pixel text-sm'>GAME PREVIEW</span>
+              <img
+                // src={`${VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN}/published/${game.id}/img/coverImage.png`}
+                src={`https://${VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN}/published/${
+                  game.id
+                }/img/coverImage.png?${Date.now()}`}
+                alt='Game Cover'
+                className='max-h-32 object-contain'
+              />
+
+              {/* <span className='font-pixel text-sm'>GAME PREVIEW</span> */}
             </div>
 
             <p className='mt-3 text-sm'>{game.description}</p>
 
             <div className='flex justify-between items-center mt-4 text-xs'>
-              <span>BY: {game.author}</span>
+              <span>
+                BY: {game.publisher.walletAddress.slice(2, 6)}...
+                {game.publisher.walletAddress.slice(-4)}
+              </span>
               <span>PLAYS: {game.plays.toLocaleString()}</span>
             </div>
 
-            <button className='retro-btn w-full mt-3 text-sm py-1'>
+            <button
+              className='retro-btn w-full mt-3 text-sm py-1'
+              onClick={() => handlePlayGame(game.id, game.name)}>
               PLAY NOW
             </button>
           </div>
         ))}
       </div>
+      <PlayGameModal
+        isOpen={isPlayGameModalOpen}
+        onClose={() => setIsPlayGameModalOpen(false)}
+        title={selectedGameTitle}
+        currentGameURL={selectedGameUrl}
+      />
     </div>
   );
 };
