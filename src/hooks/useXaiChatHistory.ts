@@ -62,6 +62,10 @@ const useXaiChatHistory = () => {
 
     try {
       let accumulatedContent = '';
+
+      if (chatHistory.length === 0) {
+        // input to thread name
+      }
       xaiStreamEvent({
         chatHistory: chatHistory.concat(newUserMessage),
         // systemPrompt: claudeGameSystemPrompt,

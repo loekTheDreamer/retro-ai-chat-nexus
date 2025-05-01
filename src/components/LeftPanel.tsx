@@ -12,41 +12,28 @@ import RenameGameModal from './RenameGameModal';
 import useChatStore from '@/store/useChatStore';
 import useCurrentGameState from '@/store/useCurrentGameState';
 import { toast } from 'sonner';
+import useGamesListStore, { GamesList } from '@/store/useGamesListStore';
 
-interface GamesList {
-  createdAt: string;
-  id: string;
-  name: string;
-  status: string;
-  threads: Thread[];
-}
-
-interface Message {
-  id: string;
-  createdAt: string;
-  content: string;
-  sender: string;
-  isUser: boolean;
-  role: string;
-}
-
-interface Thread {
-  id: string;
-  createdAt: string;
-  messages: Message[];
-}
+// interface GamesList {
+//   createdAt: string;
+//   id: string;
+//   name: string;
+//   status: string;
+//   threads: Thread[];
+// }
 
 interface LeftPanelProps {
   isOpen: boolean;
 }
 
 const LeftPanel = ({ isOpen }: LeftPanelProps) => {
-  const [gamesList, setGamesList] = useState<GamesList[]>([]);
+  // const [gamesList, setGamesList] = useState<GamesList[]>([]);
   const [isGameModalOpen, setIsGameModalOpen] = useState(false);
-  const [updatedGameName, setUpdatedGameName] = useState('');
   const [gameIdToUpdate, setGameIdToUpdate] = useState('');
   const [onMount, setOnMount] = useState(false);
-
+  // console.log('gamesList:', gamesList);
+  const { gamesList, setGamesList, addThreadToGame, addGameToGamesList } =
+    useGamesListStore();
   const { token } = useAuthStore();
   const {
     threadId,
@@ -125,6 +112,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     getGames();
   }, [
     onMount,
+    setGamesList,
     setReplaceChatHistory,
     setThreadId,
     threadId,
@@ -153,25 +141,26 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     console.log('codeBlocks', codeBlocks);
     resetChatStore(id, codeBlocks);
     updateCurrentGameStore(gameId);
-    setGamesList((prev) => {
-      return prev.map((game) => {
-        if (game.id === gameId) {
-          // Add the new thread to the correct game
-          return {
-            ...game,
-            threads: [
-              {
-                id,
-                createdAt: new Date().toISOString(),
-                messages: []
-              },
-              ...game.threads
-            ]
-          };
-        }
-        return game;
-      });
-    });
+    addThreadToGame(gameId, id);
+    // setGamesList((prev) => {
+    //   return prev.map((game) => {
+    //     if (game.id === gameId) {
+    //       // Add the new thread to the correct game
+    //       return {
+    //         ...game,
+    //         threads: [
+    //           {
+    //             id,
+    //             createdAt: new Date().toISOString(),
+    //             messages: []
+    //           },
+    //           ...game.threads
+    //         ]
+    //       };
+    //     }
+    //     return game;
+    //   });
+    // });
   };
 
   const handleThreadClick = async (id: string, currentGameId: string) => {
@@ -184,30 +173,31 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
   };
 
   const handleCreateNewGame = async () => {
-    const newGame = await createNewGame();
-    console.log('newGame:', newGame);
-    if (newGame.success === false) {
+    const gameWithThread = await createNewGame();
+    console.log('newGame:', gameWithThread);
+    if (gameWithThread.success === false) {
       toast.error(
         "You haven't made a game yet, why do you need a new project?"
       );
       return;
     }
-    resetChatStore(newGame.threads[0].id);
-    updateCurrentGameStore(newGame.id);
+    resetChatStore(gameWithThread.threads[0].id);
+    updateCurrentGameStore(gameWithThread.id);
 
-    setGamesList((prev) => [
-      {
-        ...newGame,
-        threads: [
-          {
-            id: newGame.threads[0].id,
-            createdAt: new Date().toISOString(),
-            messages: []
-          }
-        ]
-      },
-      ...prev
-    ]);
+    addGameToGamesList(gameWithThread);
+    // setGamesList((prev) => [
+    //   {
+    //     ...newGame,
+    //     threads: [
+    //       {
+    //         id: newGame.threads[0].id,
+    //         createdAt: new Date().toISOString(),
+    //         messages: []
+    //       }
+    //     ]
+    //   },
+    //   ...prev
+    // ]);
   };
 
   const handleOpenGame = (game: GamesList) => {

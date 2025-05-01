@@ -14,7 +14,6 @@ export interface GameFiles {
   code: string;
   type: string;
 }
-
 interface VariableCurrentGameState {
   gameFiles: GameFiles[];
   updateId: number;
