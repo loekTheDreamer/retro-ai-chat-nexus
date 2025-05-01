@@ -176,8 +176,8 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
       console.log('creating thread names:', thread.messages);
       if (
         thread.messages.length === 0 ||
-        (thread.messages[0].role === 'assistant' &&
-          thread.messages.length === 0)
+        (thread.messages.length === 1 &&
+          thread.messages[0].role === 'assistant')
       ) {
         console.log('test::', thread.messages.length);
         return (
@@ -202,16 +202,17 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
         );
       }
 
-      // if (thread.messages.length > 0 && thread.messages[1].role !== 'user') {
-      //   return (
-      //     <button
-      //       key={thread.id}
-      //       onClick={() => handleThreadClick(thread.id, game.id)}
-      //       className='w-full text-left p-2 text-xs hover:bg-neoplay-gray border-b border-neoplay-green last:border-b-0'>
-      //       {thread.messages[0].content}
-      //     </button>
-      //   );
-      // }
+      if (thread.messages.length > 0 && thread.messages[1].role == 'user') {
+        console.log('this should have trigger');
+        return (
+          <button
+            key={thread.id}
+            onClick={() => handleThreadClick(thread.id, game.id)}
+            className='w-full text-left p-2 text-xs hover:bg-neoplay-gray border-b border-neoplay-green last:border-b-0'>
+            {thread.messages[1].content}
+          </button>
+        );
+      }
     });
 
     return threadDiv;
