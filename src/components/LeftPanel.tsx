@@ -194,6 +194,20 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     }
     resetChatStore(newGame.threads[0].id);
     resetCurrentGameStore();
+
+    setGamesList((prev) => [
+      {
+        ...newGame,
+        threads: [
+          {
+            id: newGame.threads[0].id,
+            createdAt: new Date().toISOString(),
+            messages: []
+          }
+        ]
+      },
+      ...prev
+    ]);
   };
 
   const handleOpenGame = (game: GamesList) => {
@@ -252,7 +266,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
         <h2 className='font-pixel text-sm mb-4'>GAME PROJECTS</h2>
 
         <div className='space-y-2'>
-          {gamesList.map((game) => (
+          {gamesList.map((game, index) => (
             <div key={game.id} className='border border-neoplay-green'>
               <button
                 onClick={() => toggleGameExpand(game.id)}
@@ -260,7 +274,9 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
                 onMouseLeave={() => handlePencilHoverLeave(game.id)}
                 className='flex items-center justify-between w-full p-2 hover:bg-neoplay-gray text-left'>
                 <span className='flex items-center gap-2 font-mono text-sm truncate '>
-                  {game.name}
+                  {game.name === 'Untitled Game'
+                    ? 'Untitled Game #' + (gamesList.length - index)
+                    : game.name}
                   <span className='relative flex items-center'>
                     <Pencil
                       size={12}
