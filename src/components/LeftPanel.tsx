@@ -167,6 +167,12 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
   const handleCreateNewGame = async () => {
     const newGame = await createNewGame();
     console.log('newGame:', newGame);
+    if (newGame.success === false) {
+      toast.error(
+        "You haven't made a game yet, why do you need a new project?"
+      );
+      return;
+    }
     resetChatStore(newGame.threads[0].id);
     resetCurrentGameStore();
   };

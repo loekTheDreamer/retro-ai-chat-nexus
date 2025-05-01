@@ -328,7 +328,7 @@ export const createNewGame = async () => {
         Authorization: 'Bearer ' + token,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ token })
+      body: JSON.stringify({})
     });
     if (!response.ok) {
       throw new Error('Failed to create game');
