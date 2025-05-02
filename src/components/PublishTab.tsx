@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import useCurrentGameState from '@/store/useCurrentGameState';
-import { publishGameApi } from '@/api/commonApi';
+import { publishGameApi } from '@/api/publishApi';
 
 export function PublishTab() {
   const [formData, setFormData] = useState({

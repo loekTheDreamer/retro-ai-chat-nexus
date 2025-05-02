@@ -1,4 +1,4 @@
-import { getPublishedGamesApi } from '@/api/commonApi';
+import { getPublishedGamesApi, playPublishedGameApi } from '@/api/publishApi';
 import { useCallback, useEffect, useState } from 'react';
 import PlayGameModal from './PlayGameModal';
 import { Heart, Play } from 'lucide-react';
@@ -16,6 +16,11 @@ interface Game {
   plays: number;
   genre: string;
   tags: string[];
+  _count: {
+    likedBy: number;
+  };
+  likedByMe: boolean;
+  playedByMe: boolean;
 }
 
 const PublishedGames = () => {
@@ -26,18 +31,19 @@ const PublishedGames = () => {
     null
   );
   const [games, setGames] = useState<Game[]>([]);
+  const [playedGameIds, setPlayedGameIds] = useState<Set<string>>(new Set());
 
   const fetchPublishedGames = useCallback(async () => {
     console.log('fetching published games');
     try {
       const response = await getPublishedGamesApi();
       if (response.publishedGames) {
-        const one = response.publishedGames[0];
-        const two = response.publishedGames[0];
-        const three = response.publishedGames[0];
+        // const one = response.publishedGames[0];
+        // const two = response.publishedGames[0];
+        // const three = response.publishedGames[0];
         console.log('response', response);
-        // setGames(response.publishedGames);
-        setGames([one, two, three, one, two, three]);
+        setGames(response.publishedGames);
+        // setGames([one, two, three, one, two, three]);
       }
     } catch (error) {
       console.error('Error fetching user games:', error);
@@ -51,14 +57,16 @@ const PublishedGames = () => {
     // setOnMount(true);
   }, [fetchPublishedGames]);
 
-  const handlePlayGame = (gameId: string, gameTitle: string) => {
+  const handlePlayGame = (game: Game) => {
     // title={game.name}
     // currentGameURL={game.url}
-    setSelectedGameTitle(gameTitle);
+    setSelectedGameTitle(game.name);
     setSelectedGameUrl(
-      `https://${VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN}/published/${gameId}/index.html`
+      `https://${VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN}/published/${game.id}/index.html`
     );
     setIsPlayGameModalOpen(true);
+    setPlayedGameIds((prev) => new Set(prev).add(game.id)); // Mark as played locally
+    playPublishedGameApi(game.id, game.playedByMe);
   };
 
   return (
@@ -97,23 +105,27 @@ const PublishedGames = () => {
               <span className='inline-flex items-center gap-1'>
                 <Play
                   className='w-4 h-4 text-neoplay-green'
-                  fill='currentColor'
+                  fill={
+                    game.playedByMe || playedGameIds.has(game.id)
+                      ? 'currentColor'
+                      : undefined
+                  }
                 />
-                {game.plays.toLocaleString()}
+                {game.plays}
               </span>
 
               <span className='inline-flex items-center gap-1'>
                 <Heart
                   className='w-4 h-4 text-neoplay-green'
-                  fill='currentColor'
+                  fill={game.likedByMe && 'currentColor'}
                 />
-                {game.likes ?? 0}
+                {game._count.likedBy}
               </span>
             </div>
 
             <button
               className='retro-btn w-full mt-3 text-sm py-1'
-              onClick={() => handlePlayGame(game.id, game.name)}>
+              onClick={() => handlePlayGame(game)}>
               PLAY NOW
             </button>
           </div>
