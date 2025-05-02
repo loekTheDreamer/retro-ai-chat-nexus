@@ -42,11 +42,11 @@ const PublishedGames = () => {
       const response = await getPublishedGamesApi();
       if (response.publishedGames) {
         const one = response.publishedGames[0];
-        const two = response.publishedGames[0];
-        const three = response.publishedGames[0];
+        // const two = response.publishedGames[0];
+        // const three = response.publishedGames[0];
         console.log('response', response);
-        // setGames(response.publishedGames);
-        setGames([one, two, three, one, two, three]);
+        setGames(response.publishedGames);
+        // setGames([one, two, three, one, two, three]);
       }
     } catch (error) {
       console.error('Error fetching user games:', error);
@@ -115,7 +115,9 @@ const PublishedGames = () => {
 
   return (
     <div className='w-full py-6 px-4 md:px-6'>
-      {/* <h2 className="text-3xl font-bold mb-6 text-neoplay-purple">Published Games</h2> */}
+      <h2 className='text-3xl font-bold mb-6 text-neoplay-purple'>
+        Published Games
+      </h2>
       <div className='grid grid-cols-[repeat(auto-fit,minmax(250px,250px))] gap-20 w-full justify-center'>
         {games.map((game) => (
           <div
