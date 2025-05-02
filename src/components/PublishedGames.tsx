@@ -116,12 +116,11 @@ const PublishedGames = () => {
   return (
     <div className='w-full py-6 px-4 md:px-6'>
       {/* <h2 className="text-3xl font-bold mb-6 text-neoplay-purple">Published Games</h2> */}
-      <div className='grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-3 lg:gap-6 w-full'>
+      <div className='grid grid-cols-[repeat(auto-fit,minmax(250px,250px))] gap-20 w-full justify-center'>
         {games.map((game) => (
           <div
             key={game.id}
-            className='border-2 border-neoplay-green p-4 hover:bg-neoplay-gray cursor-pointer transition-colors w-[250px] h-[400px] mx-auto'
-          >
+            className='border-2 border-neoplay-green p-4 hover:bg-neoplay-gray cursor-pointer transition-colors w-[250px] h-[400px] mx-auto'>
             <h2 className='font-pixel text-lg truncate'>{game.name}</h2>
 
             <div className='h-48 bg-neoplay-gray mt-2 flex items-center justify-center w-full overflow-hidden'>
