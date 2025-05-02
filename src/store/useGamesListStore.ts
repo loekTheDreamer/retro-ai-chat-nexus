@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import useChatStore from './useChatStore';
 import useCurrentGameState from './useCurrentGameState';
 
-interface Message {
+export interface ThreadMessage {
   id: string;
   createdAt: string;
   content: string;
@@ -15,7 +15,7 @@ interface Message {
 interface Thread {
   id: string;
   createdAt: string;
-  messages: Message[];
+  messages: ThreadMessage[];
 }
 export interface GamesList {
   createdAt: string;
