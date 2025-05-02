@@ -49,7 +49,9 @@ export const getPublishedGamesApi = async () => {
         'Content-Type': 'application/json'
       }
     });
+    console.log('response', response);
     if (!response.ok) {
+      console.log('ffs');
       throw new Error('Failed to get published games');
     }
     return response.json();
@@ -58,7 +60,25 @@ export const getPublishedGamesApi = async () => {
   }
 };
 
-export const likePublishedGameApi = async (gameId: string) => {};
+export const likePublishedGameApi = async (gameId: string) => {
+  const token = useAuthStore.getState().token;
+  try {
+    const response = await fetch(`${baseURL}/publish/like`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: 'Bearer ' + token
+      },
+      body: JSON.stringify({ gameId })
+    });
+    if (!response.ok) {
+      console.log('Failed to like game');
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error liking game:', error);
+  }
+};
 
 export const playPublishedGameApi = async (
   gameId: string,

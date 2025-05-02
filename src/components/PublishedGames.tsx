@@ -1,4 +1,8 @@
-import { getPublishedGamesApi, playPublishedGameApi } from '@/api/publishApi';
+import {
+  getPublishedGamesApi,
+  likePublishedGameApi,
+  playPublishedGameApi
+} from '@/api/publishApi';
 import { useCallback, useEffect, useState } from 'react';
 import PlayGameModal from './PlayGameModal';
 import { Heart, Play } from 'lucide-react';
@@ -6,7 +10,7 @@ import { Heart, Play } from 'lucide-react';
 const VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN = import.meta.env
   .VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN;
 
-interface Game {
+export interface Game {
   id: string;
   name: string;
   description: string;
@@ -27,11 +31,10 @@ const PublishedGames = () => {
   const [onMount, setOnMount] = useState(false);
   const [isPlayGameModalOpen, setIsPlayGameModalOpen] = useState(false);
   const [selectedGameUrl, setSelectedGameUrl] = useState<string | null>(null);
-  const [selectedGameTitle, setSelectedGameTitle] = useState<string | null>(
-    null
-  );
+
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [games, setGames] = useState<Game[]>([]);
-  const [playedGameIds, setPlayedGameIds] = useState<Set<string>>(new Set());
+  // const [playedGameIds, setPlayedGameIds] = useState<Set<string>>(new Set());
 
   const fetchPublishedGames = useCallback(async () => {
     console.log('fetching published games');
@@ -60,13 +63,54 @@ const PublishedGames = () => {
   const handlePlayGame = (game: Game) => {
     // title={game.name}
     // currentGameURL={game.url}
-    setSelectedGameTitle(game.name);
+    console.log('game', game);
+    setSelectedGame(game);
+
     setSelectedGameUrl(
       `https://${VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN}/published/${game.id}/index.html`
     );
     setIsPlayGameModalOpen(true);
-    setPlayedGameIds((prev) => new Set(prev).add(game.id)); // Mark as played locally
+    setGames((prev) =>
+      prev.map((g) =>
+        g.id === game.id ? { ...g, playedByMe: true, plays: g.plays + 1 } : g
+      )
+    );
+    // setSelectedGame((prev) =>
+    //   prev && prev.id === game.id
+    //     ? { ...prev, playedByMe: true }
+    //     : prev
+    // );
     playPublishedGameApi(game.id, game.playedByMe);
+  };
+
+  const likeGame = (gameId: string) => {
+    likePublishedGameApi(gameId);
+    setGames((prev) =>
+      prev.map((game) =>
+        game.id === gameId
+          ? {
+              ...game,
+              likedByMe: true,
+              _count: {
+                ...game._count,
+                likedBy: game._count.likedBy + 1
+              }
+            }
+          : game
+      )
+    );
+    setSelectedGame((prev) =>
+      prev && prev.id === gameId
+        ? {
+            ...prev,
+            likedByMe: true,
+            _count: {
+              ...prev._count,
+              likedBy: prev._count.likedBy + 1
+            }
+          }
+        : prev
+    );
   };
 
   return (
@@ -105,11 +149,7 @@ const PublishedGames = () => {
               <span className='inline-flex items-center gap-1'>
                 <Play
                   className='w-4 h-4 text-neoplay-green'
-                  fill={
-                    game.playedByMe || playedGameIds.has(game.id)
-                      ? 'currentColor'
-                      : undefined
-                  }
+                  fill={game.playedByMe ? 'currentColor' : undefined}
                 />
                 {game.plays}
               </span>
@@ -134,8 +174,9 @@ const PublishedGames = () => {
       <PlayGameModal
         isOpen={isPlayGameModalOpen}
         onClose={() => setIsPlayGameModalOpen(false)}
-        title={selectedGameTitle}
+        selectedGame={selectedGame}
         currentGameURL={selectedGameUrl}
+        likeGame={likeGame}
       />
     </div>
   );

@@ -5,20 +5,26 @@ import {
   DialogTitle
 } from '@/components/ui/dialog';
 import { Button } from './ui/button';
+import { Game } from './PublishedGames';
 
 interface PlayGameModalProps {
+  selectedGame: Game | null;
   isOpen: boolean;
   onClose: () => void;
-  title: string;
+  // title: string;
   currentGameURL: string;
+  likeGame: (gameId: string) => void;
+  // selectedGameId: string;
 }
 
 const PlayGameModal = ({
   isOpen,
   onClose,
-  title,
-  currentGameURL
+  currentGameURL,
+  likeGame,
+  selectedGame
 }: PlayGameModalProps) => {
+  console.log('selectedGame', selectedGame?.likedByMe);
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
@@ -37,7 +43,7 @@ const PlayGameModal = ({
         }}>
         <DialogHeader>
           <DialogTitle className='text-neoplay-green font-pixel text-xl text-center'>
-            {title}
+            {selectedGame?.name}
           </DialogTitle>
         </DialogHeader>
         <div
@@ -59,19 +65,21 @@ const PlayGameModal = ({
           />
         </div>
         <Button
-          // onClick={() => connect({ connector })}
+          onClick={onClose}
           className='retro-btn items-center justify-center gap-2 w-full'
           // className='retro-btn items-center justify-start gap-2'
         >
           close
         </Button>
-        <Button
-          // onClick={() => connect({ connector })}
-          className='retro-btn items-center justify-center gap-2 w-full'
-          // className='retro-btn items-center justify-start gap-2'
-        >
-          like
-        </Button>
+        {!selectedGame?.likedByMe && (
+          <Button
+            onClick={() => likeGame(selectedGame.id)}
+            className='retro-btn items-center justify-center gap-2 w-full'
+            // className='retro-btn items-center justify-start gap-2'
+          >
+            like
+          </Button>
+        )}
       </DialogContent>
     </Dialog>
   );
