@@ -41,12 +41,12 @@ const PublishedGames = () => {
     try {
       const response = await getPublishedGamesApi();
       if (response.publishedGames) {
-        // const one = response.publishedGames[0];
-        // const two = response.publishedGames[0];
-        // const three = response.publishedGames[0];
+        const one = response.publishedGames[0];
+        const two = response.publishedGames[0];
+        const three = response.publishedGames[0];
         console.log('response', response);
-        setGames(response.publishedGames);
-        // setGames([one, two, three, one, two, three]);
+        // setGames(response.publishedGames);
+        setGames([one, two, three, one, two, three]);
       }
     } catch (error) {
       console.error('Error fetching user games:', error);
@@ -114,14 +114,13 @@ const PublishedGames = () => {
   };
 
   return (
-    <div className='h-full overflow-auto p-6'>
-      {/* <h1 className='font-pixel text-2xl mb-6 text-center'>PUBLISHED GAMES</h1> */}
-
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
+    <div className='w-full py-6 px-4 md:px-6'>
+      {/* <h2 className="text-3xl font-bold mb-6 text-neoplay-purple">Published Games</h2> */}
+      <div className='grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6 w-full'>
         {games.map((game) => (
           <div
             key={game.id}
-            className='border-2 border-neoplay-green p-4 hover:bg-neoplay-gray cursor-pointer transition-colors'>
+            className='border-2 border-neoplay-green p-4 hover:bg-neoplay-gray cursor-pointer transition-colors w-full'>
             <h2 className='font-pixel text-lg'>{game.name}</h2>
 
             <div className='h-48 bg-neoplay-gray mt-2 flex items-center justify-center'>
