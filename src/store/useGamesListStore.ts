@@ -131,17 +131,27 @@ const useGamesListStore = create<
     }));
   },
   deleteThread: (threadId: string, currentGameId: string) => {
-    set((state) => ({
-      gamesList: state.gamesList.map((game) => {
+    const { threadId: selectedThreadId, setThreadId } = useChatStore.getState();
+    set((state) => {
+      // Remove the thread from the current game's threads
+      const updatedGamesList = state.gamesList.map((game) => {
         if (game.id === currentGameId) {
+          const filteredThreads = game.threads.filter((thread) => thread.id !== threadId);
+          // If the deleted thread is currently selected, update the chat store's threadId
+          if (selectedThreadId === threadId) {
+            // Pick the latest thread (by createdAt desc) or empty string if none
+            const latestThread = filteredThreads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+            setThreadId(latestThread ? latestThread.id : '');
+          }
           return {
             ...game,
-            threads: game.threads.filter((thread) => thread.id !== threadId)
+            threads: filteredThreads
           };
         }
         return game;
-      })
-    }));
+      });
+      return { gamesList: updatedGamesList };
+    });
   },
   resetGamesListStore: () => set({ ...initialState })
 }));
