@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import AceEditor from 'react-ace';
-import ace from 'ace-builds/src-noconflict/ace';
+// import ace from 'ace-builds/src-noconflict/ace';
 
 // Import necessary Ace Editor modules
 import 'ace-builds/src-noconflict/mode-html';
@@ -30,51 +30,10 @@ interface AgentBubbleProps {
   messageCount: number;
 }
 
-ace.define(
-  'ace/theme/mycustom',
-  ['require', 'exports', 'module', 'ace/lib/dom'],
-  function (require, exports, module) {
-    exports.isDark = true;
-    exports.cssClass = 'ace-mycustom';
-    exports.cssText = `
-    .ace-mycustom .ace_gutter {
-      background: #102b13 !important;
-      color: #4AFF00 !important;
-      border-right: 1px solid #4AFF00 !important;
-    }
-    .ace-mycustom {
-      background-color: #102b13 !important;
-      color: #4AFF00 !important;
-      border: 1px solid #4AFF00;
-      font-family: 'Fira Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-      font-size: 0.95rem;
-    }
-    .ace-mycustom .ace_cursor {
-      color: #4AFF00 !important;
-    }
-    .ace-mycustom .ace_print-margin {
-      display: none !important;
-    }
-    .ace-mycustom .ace_marker-layer,
-    .ace-mycustom .ace_active-line {
-      background: none !important;
-    }
-    .ace-mycustom .ace_gutter-active-line {
-      background-color: #102b13 !important;
-    }
-    .ace-mycustom .ace_line {
-      color: #4AFF00 !important;
-    }
-    .ace-mycustom .ace_marker-layer .ace_selection {
-      background: #0A0A0A !important;
-      color: #4AFF00 !important;
+import { registerAceMyCustomTheme } from '../utils/aceMyCustomTheme';
 
-    }
-    `;
-    const dom = require('../lib/dom');
-    dom.importCssString(exports.cssText, exports.cssClass);
-  }
-);
+// Register the custom Ace theme once before using it
+registerAceMyCustomTheme();
 
 export const AgentBubble: React.FC<AgentBubbleProps> = ({
   content,
@@ -117,9 +76,9 @@ export const AgentBubble: React.FC<AgentBubbleProps> = ({
   // console.log('shouldAutoScroll: ', shouldAutoScroll);
   const editorRef = useRef<AceEditor>(null);
 
-  useEffect(() => {
-    ace.config.set('basePath', '/node_modules/ace-builds/src-noconflict');
-  }, []);
+  // useEffect(() => {
+  //   ace.config.set('basePath', '/node_modules/ace-builds/src-noconflict');
+  // }, []);
 
   useEffect(() => {
     setShouldAutoScroll(true);
