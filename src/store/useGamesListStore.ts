@@ -154,6 +154,19 @@ const useGamesListStore = create<
             )[0];
             if (latestThread) {
               setThreadId(latestThread.id);
+              // Use the latest threads from the updated game object to update chatHistory
+              const updatedThreads = [...filteredThreads];
+              const currentThread = updatedThreads.find(
+                (t) => t.id === latestThread.id
+              );
+              if (currentThread) {
+                useChatStore.getState().setReplaceChatHistory(
+                  currentThread.messages.map((msg) => ({
+                    ...msg,
+                    role: msg.role as 'user' | 'assistant' | 'system'
+                  }))
+                );
+              }
             }
           }
           return {
