@@ -17,6 +17,7 @@ interface ActionsChatState {
   setReplaceChatHistory: (chatHistory: Message[]) => void;
   resetChatStore: (threadId: string, codeBlocks?: string) => void;
   updateChatStore: (threadId: string, chatHistory: Message[]) => void;
+  resetEntireChatStore: () => void;
 }
 
 const initialState: VariableChatState = {
@@ -67,7 +68,8 @@ const useChatStore = create<VariableChatState & ActionsChatState>()(
         console.log('threadId44', threadId);
         console.log('chatHistory', chatHistory);
         set({ threadId, chatHistory });
-      }
+      },
+      resetEntireChatStore: () => set({ ...initialState })
     }),
 
     {

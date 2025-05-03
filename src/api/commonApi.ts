@@ -338,3 +338,28 @@ export const createGameFilesApi = async (gameId: string) => {
     console.error('Error creating game files:', error);
   }
 };
+
+export const deleteThreadApi = async (threadId: string): Promise<boolean> => {
+  const token = useAuthStore.getState().token;
+  try {
+    console.log('Deleting thread');
+
+    const response = await fetch(`${baseURL}/game/thread`, {
+      method: 'DELETE',
+      credentials: 'include',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ threadId })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete thread');
+    }
+    const data = await response.json();
+    return data.success;
+  } catch (error) {
+    console.error('Error deleting thread:', error);
+  }
+};

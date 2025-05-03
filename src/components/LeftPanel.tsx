@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronDown, Plus, Pencil, Trash } from 'lucide-react';
+import { ChevronDown, Plus, Pencil, Trash2 } from 'lucide-react';
 import {
   addThreadApi,
   createNewGame,
+  deleteThreadApi,
   getThreadsApi,
   getUserGamesApi,
   updateGameNameApi
@@ -17,6 +18,7 @@ import useGamesListStore, {
   ThreadMessage
 } from '@/store/useGamesListStore';
 import { Message } from '@/types/message';
+import DeleteThreadModal from './DeleteThreadModal';
 
 // interface GamesList {
 //   createdAt: string;
@@ -31,13 +33,24 @@ interface LeftPanelProps {
 }
 
 const LeftPanel = ({ isOpen }: LeftPanelProps) => {
+  const [showTrashFor, setShowTrashFor] = useState<Record<string, boolean>>({});
+  const trashTimers = React.useRef<Record<string, NodeJS.Timeout>>({});
+
   // const [gamesList, setGamesList] = useState<GamesList[]>([]);
   const [isGameModalOpen, setIsGameModalOpen] = useState(false);
+  const [isDeleteThreadModalOpen, setIsDeleteThreadModalOpen] = useState(false);
   const [gameIdToUpdate, setGameIdToUpdate] = useState('');
   const [onMount, setOnMount] = useState(false);
+  const [threadIdToDelete, setThreadIdToDelete] = useState('');
+  const [gameIdOfThreadToDelete, setGameIdOfThreadToDelete] = useState('');
   // console.log('gamesList:', gamesList);
-  const { gamesList, setGamesList, addThreadToGame, addGameToGamesList } =
-    useGamesListStore();
+  const {
+    gamesList,
+    setGamesList,
+    addThreadToGame,
+    addGameToGamesList,
+    deleteThread
+  } = useGamesListStore();
   const { token } = useAuthStore();
   const {
     threadId,
@@ -47,6 +60,10 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     updateChatStore
   } = useChatStore();
   const { increaseUpdateId, updateCurrentGameStore } = useCurrentGameState();
+
+  useEffect(() => {
+    console.log('gamesList:', gamesList);
+  }, [gamesList]);
 
   const [expandedGames, setExpandedGames] = useState<Record<string, boolean>>({
     '1': true,
@@ -83,6 +100,21 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
   }, []);
   // --- End Pencil delayed hover state ---
 
+  const handleTrashHoverEnter = (threadId: string) => {
+    trashTimers.current[threadId] = setTimeout(() => {
+      setShowTrashFor((prev) => ({ ...prev, [threadId]: true }));
+    }, 300);
+  };
+  const handleTrashHoverLeave = (threadId: string) => {
+    clearTimeout(trashTimers.current[threadId]);
+    setShowTrashFor((prev) => ({ ...prev, [threadId]: false }));
+  };
+  useEffect(() => {
+    return () => {
+      Object.values(trashTimers.current).forEach(clearTimeout);
+    };
+  }, []);
+
   const toggleGameExpand = (gameId: string) => {
     setExpandedGames((prev) => ({
       ...prev,
@@ -104,7 +136,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
       //   'latestGame.threads[0].messages: ',
       //   latestGame.threads[0].messages[0].role
       // );
-      console.log('gameList:', gameList);
+      // console.log('gameList:', gameList);
       setGamesList(gameList);
       setThreadId(latestGame.threads[0].id); // need to return the last game on with but also a list of the games
       setReplaceChatHistory(latestGame.threads[0].messages);
@@ -189,19 +221,6 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     updateCurrentGameStore(gameWithThread.id);
 
     addGameToGamesList(gameWithThread);
-    // setGamesList((prev) => [
-    //   {
-    //     ...newGame,
-    //     threads: [
-    //       {
-    //         id: newGame.threads[0].id,
-    //         createdAt: new Date().toISOString(),
-    //         messages: []
-    //       }
-    //     ]
-    //   },
-    //   ...prev
-    // ]);
   };
 
   // const handleOpenGame = (game: GamesList) => {
@@ -261,7 +280,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     threadLength: number
   ) => {
     let name: string;
-    console.log('messages:', messages);
+    // console.log('messages:', messages);
     if (
       messages.length === 0 ||
       (messages.length === 1 && messages[0].role === 'assistant')
@@ -291,6 +310,25 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     event.stopPropagation();
     setGameIdToUpdate(gameId);
     setIsGameModalOpen(true);
+  };
+
+  const handleTrashClick = async (
+    event: React.MouseEvent,
+    toDeleteGameId: string,
+    toDeleteThreadId: string
+  ) => {
+    event.stopPropagation();
+    console.log('toDeleteGameId', toDeleteGameId);
+    console.log('toDeleteThreadId', toDeleteThreadId);
+    setGameIdOfThreadToDelete(toDeleteGameId);
+    setThreadIdToDelete(toDeleteThreadId);
+    setIsDeleteThreadModalOpen(true);
+
+    console.log('click');
+  };
+
+  const updateDeletedThreadState = (latestThreadId: string) => {
+    setThreadId(latestThreadId);
   };
 
   if (!isOpen) return null;
@@ -341,9 +379,30 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
                     <button
                       key={thread.id}
                       onClick={() => handleThreadClick(thread.id, game.id)}
-                      className='w-full text-left p-2 text-xs hover:bg-neoplay-gray border-b border-neoplay-green last:border-b-0'>
+                      className='w-full text-left p-2 text-xs hover:bg-neoplay-gray border-b border-neoplay-green last:border-b-0'
+                      onMouseEnter={() => handleTrashHoverEnter(thread.id)}
+                      onMouseLeave={() => handleTrashHoverLeave(thread.id)}>
                       {/* {`Thread #${game.threads.length - index}`} */}
-                      {handleName(thread.messages, index, game.threads.length)}
+                      <span className='relative flex items-center'>
+                        <span className='mr-4'>
+                          {handleName(
+                            thread.messages,
+                            index,
+                            game.threads.length
+                          )}
+                        </span>
+                        <Trash2
+                          size={16}
+                          className={`absolute right-0 top-1/2 -translate-y-1/2 text-neoplay-green cursor-pointer transition-opacity duration-700 ${
+                            showTrashFor[thread.id]
+                              ? 'opacity-100 pointer-events-auto'
+                              : 'opacity-0 pointer-events-none'
+                          }`}
+                          onClick={(event) =>
+                            handleTrashClick(event, game.id, thread.id)
+                          }
+                        />
+                      </span>
                     </button>
                   ))}
                   <button
@@ -370,6 +429,14 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
         onClose={() => setIsGameModalOpen(false)}
         onGameRename={handleGameRename}
         gameId={gameIdToUpdate}
+      />
+      <DeleteThreadModal
+        isOpen={isDeleteThreadModalOpen}
+        onClose={() => setIsDeleteThreadModalOpen(false)}
+        onGameRename={handleGameRename}
+        gameIdOfThreadToDelete={gameIdOfThreadToDelete}
+        threadIdToDelete={threadIdToDelete}
+        updateDeletedThreadState={updateDeletedThreadState}
       />
     </div>
   );

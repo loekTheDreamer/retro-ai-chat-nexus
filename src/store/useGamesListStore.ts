@@ -49,12 +49,18 @@ interface ActionsGamesListStore {
   addThreadToGame: (gameId: string, threadId: string) => void;
   addGameToGamesList: (newGame: GameWithThread) => void;
   updateThreadMessage: (message: string) => void;
+  deleteThread: (threadId: string, currentGameId: string) => void;
+  resetGamesListStore: () => void;
 }
+
+const initialState: VariableGamesListStore = {
+  gamesList: []
+};
 
 const useGamesListStore = create<
   VariableGamesListStore & ActionsGamesListStore
 >((set) => ({
-  gamesList: [],
+  ...initialState,
   setGamesList: (gamesList) => set({ gamesList }),
   addThreadToGame: (gameId, threadId) =>
     set((state) => ({
@@ -123,7 +129,21 @@ const useGamesListStore = create<
         return game;
       })
     }));
-  }
+  },
+  deleteThread: (threadId: string, currentGameId: string) => {
+    set((state) => ({
+      gamesList: state.gamesList.map((game) => {
+        if (game.id === currentGameId) {
+          return {
+            ...game,
+            threads: game.threads.filter((thread) => thread.id !== threadId)
+          };
+        }
+        return game;
+      })
+    }));
+  },
+  resetGamesListStore: () => set({ ...initialState })
 }));
 
 export default useGamesListStore;
