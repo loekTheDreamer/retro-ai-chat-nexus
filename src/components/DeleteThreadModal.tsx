@@ -31,11 +31,20 @@ const DeleteThreadModal = ({
 }: WalletModalProps) => {
   const [gameName, setGameName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { deleteThread } = useGamesListStore();
+  const { deleteThread, gamesList } = useGamesListStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     console.log('threadIdToDelete', threadIdToDelete);
     console.log('gameIdOfThreadToDelete', gameIdOfThreadToDelete);
+    //
+
+    // Find the game and check thread count
+    const game = gamesList.find((g) => g.id === gameIdOfThreadToDelete);
+    if (game && game.threads.length === 1) {
+      toast.error("Can't delete thread: only one thread available.");
+      return;
+    }
+
     const response = await deleteThreadApi(threadIdToDelete);
 
     if (response === true) {

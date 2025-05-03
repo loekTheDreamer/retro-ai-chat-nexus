@@ -133,16 +133,12 @@ const useGamesListStore = create<
   },
   deleteThread: (threadId: string, currentGameId: string) => {
     const { threadId: selectedThreadId, setThreadId } = useChatStore.getState();
-    let error: string | null = null;
+
     set((state) => {
       const updatedGamesList = state.gamesList.map((game) => {
         if (game.id === currentGameId) {
           // Prevent deletion if only one thread exists
-          if (game.threads.length === 1) {
-            toast.error("Can't delete thread: only one thread available.");
-            error = "Can't delete thread: only one thread available.";
-            return game;
-          }
+
           const filteredThreads = game.threads.filter(
             (thread) => thread.id !== threadId
           );
@@ -178,9 +174,6 @@ const useGamesListStore = create<
       });
       return { gamesList: updatedGamesList };
     });
-    if (error) {
-      throw new Error(error);
-    }
   },
   resetGamesListStore: () => set({ ...initialState })
 }));
