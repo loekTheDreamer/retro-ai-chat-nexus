@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import useChatStore from './useChatStore';
 import useCurrentGameState from './useCurrentGameState';
+import { toast } from 'sonner';
 
 export interface ThreadMessage {
   id: string;
@@ -132,16 +133,28 @@ const useGamesListStore = create<
   },
   deleteThread: (threadId: string, currentGameId: string) => {
     const { threadId: selectedThreadId, setThreadId } = useChatStore.getState();
+    let error: string | null = null;
     set((state) => {
-      // Remove the thread from the current game's threads
       const updatedGamesList = state.gamesList.map((game) => {
         if (game.id === currentGameId) {
-          const filteredThreads = game.threads.filter((thread) => thread.id !== threadId);
-          // If the deleted thread is currently selected, update the chat store's threadId
+          // Prevent deletion if only one thread exists
+          if (game.threads.length === 1) {
+            toast.error("Can't delete thread: only one thread available.");
+            error = "Can't delete thread: only one thread available.";
+            return game;
+          }
+          const filteredThreads = game.threads.filter(
+            (thread) => thread.id !== threadId
+          );
           if (selectedThreadId === threadId) {
-            // Pick the latest thread (by createdAt desc) or empty string if none
-            const latestThread = filteredThreads.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
-            setThreadId(latestThread ? latestThread.id : '');
+            const latestThread = filteredThreads.sort(
+              (a, b) =>
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
+            )[0];
+            if (latestThread) {
+              setThreadId(latestThread.id);
+            }
           }
           return {
             ...game,
@@ -152,6 +165,9 @@ const useGamesListStore = create<
       });
       return { gamesList: updatedGamesList };
     });
+    if (error) {
+      throw new Error(error);
+    }
   },
   resetGamesListStore: () => set({ ...initialState })
 }));
