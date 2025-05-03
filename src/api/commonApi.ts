@@ -269,18 +269,21 @@ export const addThreadApi = async (gameId: string) => {
   }
 };
 
-export const getThreadsApi = async (id: string) => {
+export const getThreadsApi = async (id: string, gameId: string) => {
   const token = useAuthStore.getState().token;
 
   try {
-    const response = await fetch(`${baseURL}/game/thread?id=${id}`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Authorization: 'Bearer ' + token,
-        'Content-Type': 'application/json'
+    const response = await fetch(
+      `${baseURL}/game/thread?id=${id}&gameId=${gameId}`,
+      {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
     if (!response.ok) {
       throw new Error('Failed to get threads');
     }

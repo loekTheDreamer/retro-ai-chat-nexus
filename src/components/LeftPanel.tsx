@@ -59,7 +59,8 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     resetChatStore,
     updateChatStore
   } = useChatStore();
-  const { increaseUpdateId, updateCurrentGameStore } = useCurrentGameState();
+  const { increaseUpdateId, updateCurrentGameStore, setAllGameFiles } =
+    useCurrentGameState();
 
   useEffect(() => {
     console.log('gamesList:', gamesList);
@@ -167,7 +168,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
   };
 
   const handleAddThread = async (gameId: string) => {
-    const { id, codeBlocks } = await addThreadApi(gameId);
+    const { id, codeBlocks, files } = await addThreadApi(gameId);
 
     if (id === undefined) {
       toast.error('your already have a perfectly good thread at your disposal');
@@ -177,6 +178,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     resetChatStore(id, codeBlocks);
     updateCurrentGameStore(gameId);
     addThreadToGame(gameId, id);
+    setAllGameFiles(files);
     // setGamesList((prev) => {
     //   return prev.map((game) => {
     //     if (game.id === gameId) {
@@ -188,7 +190,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     //             id,
     //             createdAt: new Date().toISOString(),
     //             messages: []
-    //           },
+    //           },`
     //           ...game.threads
     //         ]
     //       };
@@ -198,13 +200,16 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     // });
   };
 
-  const handleThreadClick = async (id: string, currentGameId: string) => {
-    const thread = await getThreadsApi(id);
+  const handleThreadClick = async (id: string, selectedGameId: string) => {
+    console.log('selectedGameId!!!!!', selectedGameId);
+    const { thread, allGameFiles } = await getThreadsApi(id, selectedGameId);
+    console.log('handleThreadClick allGameFiles', allGameFiles);
+    setAllGameFiles(allGameFiles);
     console.log('thread:', id);
     console.log('thread.messages22', thread);
     updateChatStore(id, thread.messages);
-    console.log('currentGameId!!!!!', currentGameId);
-    updateCurrentGameStore(currentGameId);
+    console.log('selectedGameId!!!!!', selectedGameId);
+    updateCurrentGameStore(selectedGameId);
     increaseUpdateId();
   };
 

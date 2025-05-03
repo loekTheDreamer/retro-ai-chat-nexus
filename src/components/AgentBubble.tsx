@@ -16,6 +16,7 @@ import { extractCode } from '@/utils/fileParser';
 
 import useCurrentGameState from '@/store/useCurrentGameState';
 import useChatStore from '@/store/useChatStore';
+import { registerAceMyCustomTheme } from '../utils/aceMyCustomTheme';
 
 // import { parseContentChat } from '@/utils/htmlParser';
 interface AgentBubbleProps {
@@ -29,8 +30,6 @@ interface AgentBubbleProps {
   // ) => void;
   messageCount: number;
 }
-
-import { registerAceMyCustomTheme } from '../utils/aceMyCustomTheme';
 
 // Register the custom Ace theme once before using it
 registerAceMyCustomTheme();

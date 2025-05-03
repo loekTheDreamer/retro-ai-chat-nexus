@@ -1,0 +1,38 @@
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #102b13;
+  padding: 10px;
+  /* border-right: 1px solid #ccc; */
+}
+
+.sidebar h3 {
+  margin: 0 0 10px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.sidebar li:hover {
+  background-color: #2ca800;
+}
+
+.sidebar li.selected {
+  background-color: #0a0a0a;
+  font-weight: bold;
+}
+
+.editor-container {
+  flex: 1;
+}

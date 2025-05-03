@@ -27,7 +27,7 @@ const useXaiChatHistory = () => {
     addMessage,
     updateLastAssistantMessage
   } = useChatStore();
-  const { saveFilesToDisk } = useCurrentGameState();
+  const { saveFilesToDisk, updateAllGameFiles } = useCurrentGameState();
   const { updateThreadMessage } = useGamesListStore();
   // const { setError } = useErrorDetectedStore();
   useEffect(() => {
@@ -99,6 +99,7 @@ const useXaiChatHistory = () => {
           // }
 
           saveFilesToDisk(token, navigate);
+          updateAllGameFiles();
         }
       });
     } catch (error) {

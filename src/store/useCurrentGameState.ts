@@ -12,6 +12,7 @@ export interface GameFiles {
 }
 interface VariableCurrentGameState {
   gameFiles: GameFiles[];
+  allGameFiles: GameFiles[];
   updateId: number;
   currentGameId: string;
   screenshotData: string;
@@ -26,12 +27,15 @@ interface ActionsCurrentGameState {
   updateCurrentGameStore: (currentGameId: string) => void;
   setUpdateId: (updateId: number) => void;
   increaseUpdateId: () => void;
+  updateAllGameFiles: () => void;
+  setAllGameFiles: (files: GameFiles[]) => void;
   // setTempId: () => void;
 }
 const baseUrl = import.meta.env.VITE_BASEURL;
 
 const initialState: VariableCurrentGameState = {
   gameFiles: [],
+  allGameFiles: [],
   currentGameId: '',
   updateId: 0,
   screenshotData: ''
@@ -97,7 +101,21 @@ const useCurrentGameState = create<
       resetCurrentGameStore: () => set({ ...initialState }),
       updateCurrentGameStore: (currentGameId) => set({ currentGameId }),
       setUpdateId: (updateId) => set({ updateId }),
-      increaseUpdateId: () => set((state) => ({ updateId: state.updateId + 1 }))
+      increaseUpdateId: () =>
+        set((state) => ({ updateId: state.updateId + 1 })),
+      updateAllGameFiles: () => {
+        const gameFiles = get().gameFiles;
+        const allFiles = get().allGameFiles;
+        // Upsert logic: use a Map to ensure unique files by filename
+        const fileMap = new Map<string, (typeof gameFiles)[0]>();
+        allFiles.forEach((file) => fileMap.set(file.filename, file));
+        gameFiles.forEach((file) => fileMap.set(file.filename, file)); // overwrite if filename matches
+        set({ allGameFiles: Array.from(fileMap.values()) });
+      },
+      setAllGameFiles: (files) => {
+        console.log('setting all game files', files);
+        set({ allGameFiles: files });
+      }
     }),
 
     {

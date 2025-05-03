@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Code, Eye, BookUp } from 'lucide-react';
 import PreviewTab from './PreviewTab';
 import PublishTab from './PublishTab';
+import CodePanel from './CodePanel';
 
 interface RightPanelProps {
   isOpen: boolean;
@@ -13,30 +14,6 @@ const RightPanel = ({ isOpen }: RightPanelProps) => {
   );
 
   if (!isOpen) return null;
-
-  const sampleCode = `function createPlayer(x, y) {
-  return {
-    x: x,
-    y: y,
-    speed: 5,
-    health: 100,
-    update() {
-      // Movement logic
-      if (keys.ArrowLeft) this.x -= this.speed;
-      if (keys.ArrowRight) this.x += this.speed;
-      if (keys.ArrowUp) this.y -= this.speed;
-      if (keys.ArrowDown) this.y += this.speed;
-      
-      // Keep player within bounds
-      this.x = Math.max(0, Math.min(canvas.width, this.x));
-      this.y = Math.max(0, Math.min(canvas.height, this.y));
-    },
-    render(ctx) {
-      ctx.fillStyle = "#4AFF00";
-      ctx.fillRect(this.x, this.y, 32, 32);
-    }
-  };
-}`;
 
   return (
     <div
@@ -71,11 +48,7 @@ const RightPanel = ({ isOpen }: RightPanelProps) => {
 
       {/* Content */}
       <div className='flex-1 overflow-auto'>
-        {activeTab === 'code' && (
-          <div className='p-4 font-mono text-sm'>
-            <pre className='whitespace-pre-wrap'>{sampleCode}</pre>
-          </div>
-        )}
+        {activeTab === 'code' && <CodePanel />}
         {activeTab === 'preview' && <PreviewTab />}
         {activeTab === 'publish' && <PublishTab />}
       </div>
