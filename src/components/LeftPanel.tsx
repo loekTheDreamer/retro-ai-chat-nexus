@@ -131,8 +131,12 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
 
     const getGames = async () => {
       console.log('gogogo');
-      const { latestGame, gameList } = await getUserGamesApi(token, threadId);
+      const { latestGame, gameList, files } = await getUserGamesApi(
+        token,
+        threadId
+      );
       console.log('latestGame:', latestGame);
+      setAllGameFiles(files);
       // console.log(
       //   'latestGame.threads[0].messages: ',
       //   latestGame.threads[0].messages[0].role
@@ -141,6 +145,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
       setGamesList(gameList);
       setThreadId(latestGame.threads[0].id); // need to return the last game on with but also a list of the games
       setReplaceChatHistory(latestGame.threads[0].messages);
+
       updateCurrentGameStore(latestGame.id);
       setOnMount(true);
     };
@@ -148,6 +153,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     getGames();
   }, [
     onMount,
+    setAllGameFiles,
     setGamesList,
     setReplaceChatHistory,
     setThreadId,

@@ -2,7 +2,7 @@ import { Message } from '@/types/message';
 import { xaiStreamEvent } from '@/api/xai';
 import useChatStore from '@/store/useChatStore';
 import useCurrentGameState from '@/store/useCurrentGameState';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import useAuthStore from '@/store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
@@ -30,10 +30,6 @@ const useXaiChatHistory = () => {
   const { saveFilesToDisk, updateAllGameFiles } = useCurrentGameState();
   const { updateThreadMessage } = useGamesListStore();
   // const { setError } = useErrorDetectedStore();
-  useEffect(() => {
-    // console.log('chatHistory: ', chatHistory);
-    // console.log('chatHistory: ', chatHistory[chatHistory.length - 1].content);
-  }, [chatHistory]);
 
   const xaiMessageStream = () => {
     const input = inputValue.trim();
