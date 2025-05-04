@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AceEditor from 'react-ace';
+import ace from 'ace-builds/src-noconflict/ace';
 // import 'ace-builds/src-noconflict/mode-javascript';
 // import 'ace-builds/src-noconflict/theme-github';
 import './ace.css'; // For basic styling
@@ -29,6 +30,8 @@ import { registerAceMyCustomTheme } from '../utils/aceMyCustomTheme';
 //   }
 // ];
 registerAceMyCustomTheme();
+// Fix Ace basePath error
+ace.config.set('basePath', '/node_modules/ace-builds/src-noconflict');
 
 function App() {
   const { allGameFiles } = useCurrentGameState();
