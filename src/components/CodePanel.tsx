@@ -44,7 +44,11 @@ function App() {
   );
 
   useEffect(() => {
-    setSelectedFile(allGameFiles.length === 0 ? undefined : allGameFiles[0]);
+    setSelectedFile(
+      allGameFiles.length === 0
+        ? { filename: '', code: '', type: '' }
+        : allGameFiles[0]
+    );
   }, [allGameFiles]);
 
   // Handle file selection
