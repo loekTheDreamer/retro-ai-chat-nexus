@@ -107,7 +107,7 @@ const ChatInterface = () => {
 
       {/* Input area */}
       <div className='p-4'>
-        <div className='relative flex items-center mb-4'>
+        <div className='relative flex items-center'>
           <Textarea
             ref={textareaRef}
             value={inputValue}

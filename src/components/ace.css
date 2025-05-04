@@ -4,23 +4,20 @@
 }
 
 .sidebar {
-  width: 200px;
+  width: 150px;
   background-color: #102b13;
-  padding: 10px;
+  /* padding: 10px; */
   /* border-right: 1px solid #ccc; */
-}
-
-.sidebar h3 {
-  margin: 0 0 10px;
 }
 
 .sidebar ul {
   list-style: none;
   padding: 0;
+  font-size: 12px;
 }
 
 .sidebar li {
-  padding: 8px;
+  padding: 6px;
   cursor: pointer;
 }
 
@@ -30,7 +27,7 @@
 
 .sidebar li.selected {
   background-color: #0a0a0a;
-  font-weight: bold;
+  /* font-weight: bold; */
 }
 
 .editor-container {
