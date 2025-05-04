@@ -17,7 +17,7 @@ export function PublishTab() {
     coverImage: ''
   });
 
-  const { screenshotData, currentGameId } = useCurrentGameState();
+  const { screenshotData, currentGameId, allGameFiles } = useCurrentGameState();
 
   useEffect(() => {
     if (screenshotData) {
@@ -149,6 +149,7 @@ export function PublishTab() {
               />
             </div>
             <Button
+              disabled={allGameFiles.length === 0}
               type='submit'
               className='w-full mt-4 bg-neoplay-green hover:bg-neoplay-green-dark text-black'>
               Publish Game

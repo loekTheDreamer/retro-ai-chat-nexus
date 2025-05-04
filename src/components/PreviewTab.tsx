@@ -22,7 +22,7 @@ type ErrorState = {
 export const PreviewTab: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { updateId, setScreenshotData } = useCurrentGameState();
+  const { updateId, setScreenshotData, allGameFiles } = useCurrentGameState();
 
   // const { address } = useAccount();
   const { address } = useAuthStore();
@@ -118,12 +118,12 @@ export const PreviewTab: React.FC = () => {
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
   }, [setScreenshotData]);
-
+  console.log('preview gameFiles', allGameFiles);
   return (
     <div className='flex flex-col items-center justify-center h-full p-4'>
       <div className='border-2 border-neoplay-green p-2 bg-neoplay-black'>
         <div ref={containerRef} className='w-600 h-600 bg-neoplay-gray'>
-          {updateId > 0 && (
+          {updateId > 0 && allGameFiles.length > 0 && (
             <div>
               <iframe
                 key={updateId}
@@ -146,7 +146,7 @@ export const PreviewTab: React.FC = () => {
           <p>at line {iframeError.line}</p>
         </div>
       )}
-      {updateId > 0 && iframeError === null && (
+      {updateId > 0 && allGameFiles.length > 0 && iframeError === null && (
         <button
           onClick={handleScreenshot}
           className='mt-2 bg-neoplay-green hover:bg-neoplay-green-dark text-black px-4 py-2 rounded'>

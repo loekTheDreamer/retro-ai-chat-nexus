@@ -210,10 +210,13 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     console.log('selectedGameId!!!!!', selectedGameId);
     const { thread, allGameFiles } = await getThreadsApi(id, selectedGameId);
     console.log('handleThreadClick allGameFiles', allGameFiles);
-    if (!allGameFiles) {
+    if (allGameFiles) {
+      setAllGameFiles(allGameFiles);
       return;
+    } else {
+      setAllGameFiles([]);
     }
-    setAllGameFiles(allGameFiles);
+
     console.log('thread:', id);
     console.log('thread.messages22', thread);
     updateChatStore(id, thread.messages);
@@ -235,7 +238,7 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     updateCurrentGameStore(gameWithThread.id);
 
     addGameToGamesList(gameWithThread);
-    setAllGameFiles([{ filename: '', code: '', type: '' }]);
+    setAllGameFiles([]);
   };
 
   // const handleOpenGame = (game: GamesList) => {
