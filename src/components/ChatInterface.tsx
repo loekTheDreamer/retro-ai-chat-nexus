@@ -17,9 +17,21 @@ interface ChatMessage {
   timestamp: Date;
 }
 
-const ChatInterface = () => {
-  const [input, setInput] = useState('');
+const gameRelatedQuestions = [
+  'What game can we create for you today?',
+  'How can we level up your gaming experience?',
+  'What kind of game are you dreaming of?',
+  'Ready to play? Let’s build your game!',
+  'What’s your next gaming adventure?',
+  'How can we bring your game ideas to life?',
+  'What game concept can we help you develop?',
+  'What’s your vision for the perfect game?',
+  'How can we make your game idea a reality?',
+  'What game features are you looking for?'
+];
 
+const ChatInterface = () => {
+  const [questions, setQuestions] = useState('');
   const {
     chatHistory,
     // setChatHistory,
@@ -56,28 +68,46 @@ const ChatInterface = () => {
     resizeTextarea();
   }, [inputValue]);
 
+  useEffect(() => {
+    setQuestions(
+      gameRelatedQuestions[
+        Math.floor(Math.random() * gameRelatedQuestions.length)
+      ]
+    );
+    // deleteGame(address);
+  }, []);
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       xaiMessageStream();
     }
   };
-
+  console.log('questions', questions);
+  console.log('chatHistory', chatHistory);
   return (
     <div className='flex-1 flex flex-col max-w-[52vw] min-w-[320px] mx-auto'>
       {/* Chat messages */}
-      <ChatContainer
-        messages={chatHistory}
-        isLoading={isLoading}
-        // imageBubbleArray={imageBubbleArray}
-        // setChatHistory={setChatHistory}
-        // messageCount={messageCount}
-        chatEndRef={chatEndRef}
-      />
+      {chatHistory.length === 0 || chatHistory[0].role === 'assistant' ? (
+        <div className='flex-1 p-4'>
+          <p className='flex justify-center items-center h-full text-center text-gray-500 text-xl'>
+            {questions}
+          </p>
+        </div>
+      ) : (
+        <ChatContainer
+          messages={chatHistory}
+          isLoading={isLoading}
+          // imageBubbleArray={imageBubbleArray}
+          // setChatHistory={setChatHistory}
+          // messageCount={messageCount}
+          chatEndRef={chatEndRef}
+        />
+      )}
 
       {/* Input area */}
       <div className='p-4'>
-        <div className='relative flex items-center'>
+        <div className='relative flex items-center mb-4'>
           <Textarea
             ref={textareaRef}
             value={inputValue}

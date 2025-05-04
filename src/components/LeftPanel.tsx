@@ -212,7 +212,6 @@ const LeftPanel = ({ isOpen }: LeftPanelProps) => {
     console.log('handleThreadClick allGameFiles', allGameFiles);
     if (allGameFiles) {
       setAllGameFiles(allGameFiles);
-      return;
     } else {
       setAllGameFiles([]);
     }
