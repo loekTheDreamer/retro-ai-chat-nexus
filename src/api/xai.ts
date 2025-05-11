@@ -3,8 +3,8 @@ import { Message } from '@/types/message';
 import useChatStore from '@/store/useChatStore';
 
 interface xaiChatRequest {
+  selectedAgent: string;
   chatHistory: Message[];
-
   onMessage: (content: string) => void;
   onDone: () => void;
 }
@@ -15,6 +15,7 @@ console.log('baseURL:', baseURL);
 let currentEventSource: EventSource | null = null; // Keep track of the current EventSource instance
 
 export const xaiStreamEvent = async ({
+  selectedAgent,
   chatHistory,
 
   onMessage,
@@ -39,7 +40,7 @@ export const xaiStreamEvent = async ({
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + token
       },
-      body: JSON.stringify({ chatHistory, threadId }),
+      body: JSON.stringify({ chatHistory, threadId, selectedAgent }),
       credentials: 'include'
     });
 

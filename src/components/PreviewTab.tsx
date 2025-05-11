@@ -146,7 +146,8 @@ export const PreviewTab: React.FC = () => {
           <p>at line {iframeError.line}</p>
         </div>
       )}
-      {updateId > 0 && allGameFiles.length > 0 && iframeError === null && (
+      {updateId > 0 && allGameFiles.length > 0 && (
+        // && iframeError === null
         <button
           onClick={handleScreenshot}
           className='mt-2 bg-neoplay-green hover:bg-neoplay-green-dark text-black px-4 py-2 rounded'>

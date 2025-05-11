@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import useAuthStore from '@/store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 import useGamesListStore from '@/store/useGamesListStore';
+import { useIframeErrorStore } from '@/store/useIframeErrorStore';
 
 const useXaiChatHistory = () => {
   //   const [chatHistory, setChatHistory] = useState<Message[]>([]);
@@ -17,6 +18,7 @@ const useXaiChatHistory = () => {
   const [inputValue, setInputValue] = useState('');
   const [prompted, setPrompted] = useState(false);
   const { token, address } = useAuthStore();
+  const { resetIframeError } = useIframeErrorStore();
 
   const navigate = useNavigate();
 
@@ -25,7 +27,9 @@ const useXaiChatHistory = () => {
     setLoading,
     chatHistory,
     addMessage,
-    updateLastAssistantMessage
+    updateLastAssistantMessage,
+    selectedAgent,
+    setSelectedAgent
   } = useChatStore();
   const { saveFilesToDisk, updateAllGameFiles } = useCurrentGameState();
   const { updateThreadMessage } = useGamesListStore();
@@ -64,7 +68,10 @@ const useXaiChatHistory = () => {
         // input to thread name
         updateThreadMessage(input);
       }
+
+      // if (selectedAgent === 'grok') {
       xaiStreamEvent({
+        selectedAgent,
         chatHistory: chatHistory.concat(newUserMessage),
         // systemPrompt: claudeGameSystemPrompt,
         onMessage: (content) => {
@@ -96,8 +103,46 @@ const useXaiChatHistory = () => {
 
           saveFilesToDisk(token, navigate);
           updateAllGameFiles();
+          resetIframeError();
         }
       });
+      // } else if (selectedAgent === 'claude-3') {
+      //   anthropicStreamEvent({
+      //     chatHistory: chatHistory.concat(newUserMessage),
+      //     systemPrompt:
+      //       chatHistory.length === 0
+      //         ? claudeGameSystemPrompt
+      //         : followUpGamePrompt,
+      //     // systemPrompt: claudeGameSystemPrompt,
+      //     onMessage: (content) => {
+      //       accumulatedContent += content;
+
+      //       // console.log('accumulatedContent:', accumulatedContent);
+      //       setChatHistory((prev) => {
+      //         const newHistory = [...prev];
+      //         if (newHistory[newHistory.length - 1]?.role === 'assistant') {
+      //           newHistory[newHistory.length - 1].content = accumulatedContent;
+      //         } else {
+      //           newHistory.push({
+      //             role: 'assistant',
+      //             content: accumulatedContent
+      //           });
+      //         }
+      //         return newHistory;
+      //       });
+      //     },
+      //     onDone: () => {
+      //       console.log('final content:', accumulatedContent);
+      //       // const code = parseHtmlFullContent(accumulatedContent);
+      //       // if (code) {
+      //       //   setHtmlContent(code);
+      //       // }
+      //       saveFilesToDisk();
+
+      //       setLoading(false);
+      //     }
+      //   });
+      // }
     } catch (error) {
       console.error('Error in xaiChat:', error);
       setLoading(false);
@@ -111,7 +156,9 @@ const useXaiChatHistory = () => {
     inputValue,
     prompted,
     setInputValue,
-    imageBubbleArray
+    imageBubbleArray,
+    setSelectedAgent,
+    selectedAgent
   };
 };
 

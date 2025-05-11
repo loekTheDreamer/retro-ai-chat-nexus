@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import {
-  Send
-  // RefreshCw
+  Send,
+  ChevronUp
+  // ChevronDown
 } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import useXaiChatHistory from '@/hooks/useXaiChatHistory';
@@ -34,13 +35,12 @@ const ChatInterface = () => {
   const [questions, setQuestions] = useState('');
   const {
     chatHistory,
-    // setChatHistory,
     xaiMessageStream,
     isLoading,
     inputValue,
-    prompted,
     setInputValue,
-    imageBubbleArray
+    selectedAgent,
+    setSelectedAgent
   } = useXaiChatHistory();
 
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -107,7 +107,9 @@ const ChatInterface = () => {
 
       {/* Input area */}
       <div className='p-4'>
-        <div className='relative flex items-center'>
+        <div className='relative flex flex-col gap-2 items-stretch'>
+          {/* Agent Selection Dropdown */}
+
           <Textarea
             ref={textareaRef}
             value={inputValue}
@@ -125,6 +127,26 @@ const ChatInterface = () => {
             className='absolute right-2 top-1/2 -translate-y-1/2 p-2 text-neoplay-green hover:text-neoplay-darkGreen disabled:opacity-50'>
             <Send size={20} />
           </button>
+        </div>
+        <div
+          className='relative mt-2'
+          style={{
+            width: '160px',
+            minWidth: '120px',
+            display: 'inline-block'
+          }}>
+          <select
+            value={selectedAgent}
+            onChange={(e) => setSelectedAgent(e.target.value)}
+            className='retro-input text-gray-400 text-xs px-2 py-1 pr-6 bg-transparent outline-none appearance-none transition-colors'
+            style={{ border: 'none', boxShadow: 'none', width: '100%' }}
+            aria-label='Select agent'>
+            <option value='grok'>Grok 3 beta (Default)</option>
+            <option value='claude-3'>Claude 3.7 sonnet</option>
+          </select>
+          <span className='pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-gray-400'>
+            <ChevronUp size={16} />
+          </span>
         </div>
         {/* <button
           onClick={() => createGameFilesApi(currentGameId)}

@@ -7,6 +7,7 @@ interface VariableChatState {
   threadId: string;
   chatHistory: Message[];
   isLoading: boolean;
+  selectedAgent: string;
 }
 interface ActionsChatState {
   addMessage: (message: Message) => void;
@@ -18,12 +19,14 @@ interface ActionsChatState {
   resetChatStore: (threadId: string, codeBlocks?: string) => void;
   updateChatStore: (threadId: string, chatHistory: Message[]) => void;
   resetEntireChatStore: () => void;
+  setSelectedAgent: (agent: string) => void;
 }
 
 const initialState: VariableChatState = {
   threadId: '',
   chatHistory: [],
-  isLoading: false
+  isLoading: false,
+  selectedAgent: 'grok'
 };
 
 const useChatStore = create<VariableChatState & ActionsChatState>()(
@@ -69,7 +72,8 @@ const useChatStore = create<VariableChatState & ActionsChatState>()(
         console.log('chatHistory', chatHistory);
         set({ threadId, chatHistory });
       },
-      resetEntireChatStore: () => set({ ...initialState })
+      resetEntireChatStore: () => set({ ...initialState }),
+      setSelectedAgent: (agent) => set({ selectedAgent: agent })
     }),
 
     {
@@ -77,7 +81,8 @@ const useChatStore = create<VariableChatState & ActionsChatState>()(
       partialize: (state) => ({
         threadId: state.threadId,
         chatHistory: state.chatHistory,
-        isLoading: state.isLoading
+        isLoading: state.isLoading,
+        selectedAgent: state.selectedAgent
       })
     }
   )
