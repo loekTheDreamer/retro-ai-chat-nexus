@@ -246,7 +246,7 @@ const Index = () => {
             </button>
 
             <div className='text-center text-xs text-neoplay-green mt-4 font-mono'>
-              PRIVATE BETA v0.1.1
+              PRIVATE BETA v0.1.2
             </div>
           </div>
         </div>
