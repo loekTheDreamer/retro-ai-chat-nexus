@@ -156,6 +156,7 @@ const ChatInterface = () => {
             aria-label='Select agent'>
             <option value='grok'>Grok 3 beta (Default)</option>
             <option value='claude-3'>Claude 3.7 sonnet</option>
+            <option value='claude-4'>Claude 4 sonnet</option>
           </select>
           <span className='pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-gray-400'>
             <ChevronUp size={16} />
