@@ -4,8 +4,10 @@ import {
   playPublishedGameApi
 } from '@/api/publishApi';
 import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import PlayGameModal from './PlayGameModal';
-import { Heart, Play } from 'lucide-react';
+import { Heart, Play } from 'lucide-react'; 
+import { toast } from 'sonner';
 
 const VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN = import.meta.env
   .VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN;
@@ -28,12 +30,12 @@ export interface Game {
 }
 
 const PublishedGames = () => {
-  const [onMount, setOnMount] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isPlayGameModalOpen, setIsPlayGameModalOpen] = useState(false);
   const [selectedGameUrl, setSelectedGameUrl] = useState<string | null>(null);
-
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [games, setGames] = useState<Game[]>([]);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   // const [playedGameIds, setPlayedGameIds] = useState<Set<string>>(new Set());
 
   const fetchPublishedGames = useCallback(async () => {
@@ -53,35 +55,94 @@ const PublishedGames = () => {
     }
   }, []);
 
+  // Handle initial load with game ID in URL
   useEffect(() => {
-    // if (!onMount) return;
+    const loadInitialGame = async () => {
+      // Only fetch games if we don't have them yet
+      if (games.length === 0) {
+        await fetchPublishedGames();
+      }
+      
+      const gameId = searchParams.get('game');
+      if (gameId) {
+        // Give it a moment for games to load if needed
+        const findAndOpenGame = () => {
+          const gameToOpen = games.find(g => g.id === gameId);
+          if (gameToOpen) {
+            setSelectedGame(gameToOpen);
+            setSelectedGameUrl(`https://${VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN}/published/${gameToOpen.id}/index.html`);
+            setIsPlayGameModalOpen(true);
+            
+            // Update play count if not already played
+            if (!gameToOpen.playedByMe) {
+              setGames(prev =>
+                prev.map(g =>
+                  g.id === gameToOpen.id 
+                    ? { ...g, playedByMe: true, plays: g.plays + 1 } 
+                    : g
+                )
+              );
+              playPublishedGameApi(gameToOpen.id, gameToOpen.playedByMe);
+            }
+          } else if (games.length > 0) {
+            // If we have games but didn't find this one
+            toast.error('Game not found');
+            const newSearchParams = new URLSearchParams(searchParams);
+            newSearchParams.delete('game');
+            setSearchParams(newSearchParams);
+          }
+        };
+        
+        // If games are already loaded, open immediately
+        if (games.length > 0) {
+          findAndOpenGame();
+        } else {
+          // Otherwise, wait a bit for games to load
+          const timer = setTimeout(() => {
+            findAndOpenGame();
+          }, 500);
+          return () => clearTimeout(timer);
+        }
+      }
+    };
+    
+    loadInitialGame();
+  }, [searchParams, games, fetchPublishedGames, setSearchParams]);
+  
+  // Close modal and clean up URL when modal is closed
+  const handleCloseModal = () => {
+    setIsPlayGameModalOpen(false);
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.delete('game');
+    setSearchParams(newSearchParams);
+  };
 
-    fetchPublishedGames();
-    // setOnMount(true);
-  }, [fetchPublishedGames]);
-
-  const handlePlayGame = (game: Game) => {
-    // title={game.name}
-    // currentGameURL={game.url}
+  const handlePlayGame = useCallback((game: Game) => {
     console.log('game', game);
     setSelectedGame(game);
 
-    setSelectedGameUrl(
-      `https://${VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN}/published/${game.id}/index.html`
-    );
+    const gameUrl = `https://${VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN}/published/${game.id}/index.html`;
+    setSelectedGameUrl(gameUrl);
+    
+    // Update URL with the game ID
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.set('game', game.id);
+    setSearchParams(newSearchParams);
+    
+    // Update play count if not already played
+    if (!game.playedByMe) {
+      setGames(prev =>
+        prev.map(g =>
+          g.id === game.id 
+            ? { ...g, playedByMe: true, plays: g.plays + 1 } 
+            : g
+        )
+      );
+      playPublishedGameApi(game.id, game.playedByMe);
+    }
+    
     setIsPlayGameModalOpen(true);
-    setGames((prev) =>
-      prev.map((g) =>
-        g.id === game.id ? { ...g, playedByMe: true, plays: g.plays + 1 } : g
-      )
-    );
-    // setSelectedGame((prev) =>
-    //   prev && prev.id === game.id
-    //     ? { ...prev, playedByMe: true }
-    //     : prev
-    // );
-    playPublishedGameApi(game.id, game.playedByMe);
-  };
+  }, [searchParams, setSearchParams]);
 
   const likeGame = (gameId: string) => {
     likePublishedGameApi(gameId);
@@ -174,7 +235,7 @@ const PublishedGames = () => {
       </div>
       <PlayGameModal
         isOpen={isPlayGameModalOpen}
-        onClose={() => setIsPlayGameModalOpen(false)}
+        onClose={handleCloseModal}
         selectedGame={selectedGame}
         currentGameURL={selectedGameUrl}
         likeGame={likeGame}

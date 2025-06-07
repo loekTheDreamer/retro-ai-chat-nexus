@@ -6,6 +6,11 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from './ui/button';
 import { Game } from './PublishedGames';
+import { Copy, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+
+const VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN = import.meta.env.VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN;
 
 interface PlayGameModalProps {
   selectedGame: Game | null;
@@ -24,6 +29,27 @@ const PlayGameModal = ({
   likeGame,
   selectedGame
 }: PlayGameModalProps) => {
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleShare = async () => {
+    try {
+      // Create a URL with the game ID as a query parameter
+      const url = new URL(window.location.href);
+      url.searchParams.set('game', selectedGame?.id || '');
+      
+      // Copy the URL to clipboard
+      await navigator.clipboard.writeText(url.toString());
+      setIsCopied(true);
+      toast.success('Game link copied to clipboard!');
+      
+      // Reset the copied state after 2 seconds
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (err) {
+      toast.error('Failed to copy link');
+      console.error('Failed to copy link: ', err);
+    }
+  };
+  
   console.log('selectedGame', selectedGame?.likedByMe);
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -64,22 +90,38 @@ const PlayGameModal = ({
             allowFullScreen
           />
         </div>
-        <Button
-          onClick={onClose}
-          className='retro-btn items-center justify-center gap-2 w-full'
-          // className='retro-btn items-center justify-start gap-2'
-        >
-          close
-        </Button>
-        {!selectedGame?.likedByMe && (
+        <div className='flex gap-2 w-full'>
           <Button
-            onClick={() => likeGame(selectedGame.id)}
-            className='retro-btn items-center justify-center gap-2 w-full'
-            // className='retro-btn items-center justify-start gap-2'
+            onClick={handleShare}
+            className='retro-btn items-center justify-center gap-2 flex-1 bg-neoplay-green hover:bg-neoplay-green/90 text-neoplay-black'
           >
-            like
+            {isCopied ? (
+              <>
+                <Check className='h-4 w-4' />
+                Copied!
+              </>
+            ) : (
+              <>
+                <Copy className='h-4 w-4' />
+                Share
+              </>
+            )}
           </Button>
-        )}
+          {!selectedGame?.likedByMe && (
+            <Button
+              onClick={() => likeGame(selectedGame.id)}
+              className='retro-btn items-center justify-center gap-2 flex-1'
+            >
+              Like
+            </Button>
+          )}
+          <Button
+            onClick={onClose}
+            className='retro-btn items-center justify-center gap-2 flex-1'
+          >
+            Close
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

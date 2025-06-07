@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Menu, X, ChevronLeft, User } from 'lucide-react';
 import { toast } from 'sonner';
 import ChatInterface from '../components/ChatInterface';
@@ -17,6 +17,7 @@ const Chat = () => {
   const navigate = useNavigate();
   const [leftPanelOpen, setLeftPanelOpen] = useState(false);
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
+  const [searchParams] = useSearchParams();
   const [showGames, setShowGames] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   // const { disconnect } = useDisconnect();
@@ -32,10 +33,21 @@ const Chat = () => {
     setRightPanelOpen(!rightPanelOpen);
   };
 
-  const toggleGamesView = () => {
-    setShowGames(!showGames);
-    toast.info(showGames ? 'Switched to Chat' : 'Switched to Published Games');
-  };
+  const toggleGamesView = useCallback((forceState?: boolean) => {
+    const newState = forceState !== undefined ? forceState : !showGames;
+    setShowGames(newState);
+    toast.info(newState ? 'Switched to Games' : 'Switched to Chat');
+  }, [showGames]);
+
+  // Handle initial game ID from URL
+  useEffect(() => {
+    const gameId = searchParams.get('game');
+    if (gameId) {
+      // Show games view if there's a game ID in the URL
+      setShowGames(true);
+      // The PublishedGames component will handle opening the specific game
+    }
+  }, [searchParams]);
 
   const handleLogout = async () => {
     logout(navigate);
@@ -61,7 +73,7 @@ const Chat = () => {
         {/* Right side */}
         <div className='flex items-center space-x-4'>
           <button
-            onClick={toggleGamesView}
+            onClick={() => toggleGamesView()}
             className='retro-btn text-sm py-1 px-3'>
             {showGames ? 'CHATBOT' : 'PUBLISHED GAMES'}
           </button>
