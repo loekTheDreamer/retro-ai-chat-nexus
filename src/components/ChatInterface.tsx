@@ -10,6 +10,8 @@ import { ChatContainer } from './ChatContainer';
 import useChatStore from '@/store/useChatStore';
 import { createGameFilesApi } from '@/api/commonApi';
 import useCurrentGameState from '@/store/useCurrentGameState';
+import useAuthStore from '@/store/useAuthStore';
+import { useNavigate } from 'react-router-dom';
 
 interface ChatMessage {
   id: number;
@@ -32,6 +34,7 @@ const gameRelatedQuestions = [
 ];
 
 const ChatInterface = () => {
+  console.log('chatInterface');
   const [questions, setQuestions] = useState('');
   const {
     chatHistory,
@@ -48,6 +51,9 @@ const ChatInterface = () => {
 
   const { clearMessages } = useChatStore();
   const { currentGameId } = useCurrentGameState();
+  const { setAuth, address, token } = useAuthStore();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -83,8 +89,15 @@ const ChatInterface = () => {
       xaiMessageStream();
     }
   };
-  console.log('questions', questions);
-  console.log('chatHistory', chatHistory);
+  // console.log('questions', questions);
+  // console.log('chatHistory', chatHistory);
+
+  console.log('token:::: ', token);
+
+  if (!token) {
+    return null;
+  }
+
   return (
     <div className='flex-1 flex flex-col max-w-[52vw] min-w-[320px] mx-auto'>
       {/* Chat messages */}
