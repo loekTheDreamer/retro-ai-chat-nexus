@@ -6,7 +6,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import PlayGameModal from './PlayGameModal';
-import { Heart, Play } from 'lucide-react'; 
+import { Heart, Play } from 'lucide-react';
 import { toast } from 'sonner';
 
 const VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN = import.meta.env
@@ -62,23 +62,25 @@ const PublishedGames = () => {
       if (games.length === 0) {
         await fetchPublishedGames();
       }
-      
+
       const gameId = searchParams.get('game');
       if (gameId) {
         // Give it a moment for games to load if needed
         const findAndOpenGame = () => {
-          const gameToOpen = games.find(g => g.id === gameId);
+          const gameToOpen = games.find((g) => g.id === gameId);
           if (gameToOpen) {
             setSelectedGame(gameToOpen);
-            setSelectedGameUrl(`https://${VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN}/published/${gameToOpen.id}/index.html`);
+            setSelectedGameUrl(
+              `https://${VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN}/published/${gameToOpen.id}/index.html`
+            );
             setIsPlayGameModalOpen(true);
-            
+
             // Update play count if not already played
             if (!gameToOpen.playedByMe) {
-              setGames(prev =>
-                prev.map(g =>
-                  g.id === gameToOpen.id 
-                    ? { ...g, playedByMe: true, plays: g.plays + 1 } 
+              setGames((prev) =>
+                prev.map((g) =>
+                  g.id === gameToOpen.id
+                    ? { ...g, playedByMe: true, plays: g.plays + 1 }
                     : g
                 )
               );
@@ -92,7 +94,7 @@ const PublishedGames = () => {
             setSearchParams(newSearchParams);
           }
         };
-        
+
         // If games are already loaded, open immediately
         if (games.length > 0) {
           findAndOpenGame();
@@ -105,10 +107,10 @@ const PublishedGames = () => {
         }
       }
     };
-    
+
     loadInitialGame();
   }, [searchParams, games, fetchPublishedGames, setSearchParams]);
-  
+
   // Close modal and clean up URL when modal is closed
   const handleCloseModal = () => {
     setIsPlayGameModalOpen(false);
@@ -117,32 +119,35 @@ const PublishedGames = () => {
     setSearchParams(newSearchParams);
   };
 
-  const handlePlayGame = useCallback((game: Game) => {
-    console.log('game', game);
-    setSelectedGame(game);
+  const handlePlayGame = useCallback(
+    (game: Game) => {
+      console.log('game', game);
+      setSelectedGame(game);
 
-    const gameUrl = `https://${VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN}/published/${game.id}/index.html`;
-    setSelectedGameUrl(gameUrl);
-    
-    // Update URL with the game ID
-    const newSearchParams = new URLSearchParams(searchParams);
-    newSearchParams.set('game', game.id);
-    setSearchParams(newSearchParams);
-    
-    // Update play count if not already played
-    if (!game.playedByMe) {
-      setGames(prev =>
-        prev.map(g =>
-          g.id === game.id 
-            ? { ...g, playedByMe: true, plays: g.plays + 1 } 
-            : g
-        )
-      );
-      playPublishedGameApi(game.id, game.playedByMe);
-    }
-    
-    setIsPlayGameModalOpen(true);
-  }, [searchParams, setSearchParams]);
+      const gameUrl = `https://${VITE_SEVALLA_BUCKET_PUBLIC_DOMAIN}/published/${game.id}/index.html`;
+      setSelectedGameUrl(gameUrl);
+
+      // Update URL with the game ID
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.set('game', game.id);
+      setSearchParams(newSearchParams);
+
+      // Update play count if not already played
+      if (!game.playedByMe) {
+        setGames((prev) =>
+          prev.map((g) =>
+            g.id === game.id
+              ? { ...g, playedByMe: true, plays: g.plays + 1 }
+              : g
+          )
+        );
+        playPublishedGameApi(game.id, game.playedByMe);
+      }
+
+      setIsPlayGameModalOpen(true);
+    },
+    [searchParams, setSearchParams]
+  );
 
   const likeGame = (gameId: string) => {
     likePublishedGameApi(gameId);
@@ -175,7 +180,7 @@ const PublishedGames = () => {
   };
 
   return (
-    <div className='w-full py-6 px-4 md:px-6'>
+    <div className='w-full py-6 px-4 md:px-6 overflow-y-auto'>
       <h2 className='text-3xl font-bold mb-6 text-neoplay-purple'>
         Published Games
       </h2>
