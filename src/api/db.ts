@@ -1,14 +1,18 @@
+import useAuthStore from '@/store/useAuthStore';
+
 const baseURL = import.meta.env.VITE_BASEURL;
 
 export const authNonce = async (walletAddress: string) => {
   console.log('authNonce:', walletAddress);
   try {
+    const password = useAuthStore.getState().password;
+
     const response = await fetch(`${baseURL}/auth/nonce`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ address: walletAddress })
+      body: JSON.stringify({ address: walletAddress, password })
     });
     if (!response.ok) {
       throw new Error('Failed to login');
@@ -23,6 +27,8 @@ export const authNonce = async (walletAddress: string) => {
   } catch (error) {
     console.error('Error logging in:', error);
     throw error;
+  } finally {
+    useAuthStore.setState({ password: '' });
   }
 };
 

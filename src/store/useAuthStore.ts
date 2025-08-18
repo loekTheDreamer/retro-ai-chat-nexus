@@ -11,7 +11,9 @@ interface JwtPayload {
 interface AuthState {
   token: string;
   address: string;
+  password: string;
   setAuth: (token: string, address: string) => void;
+  setPassword: (password: string) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -19,8 +21,12 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       token: '',
       address: '',
+      password: '',
       setAuth: (token: string, address: string) => {
         set({ token, address });
+      },
+      setPassword: (password: string) => {
+        set({ password });
       }
     }),
     {
