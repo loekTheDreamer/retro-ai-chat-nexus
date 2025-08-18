@@ -15,7 +15,7 @@ const Index = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
 
-  const { token, setAuth } = useAuthStore();
+  const { token, setAuth, password, setPassword } = useAuthStore();
 
   const { isConnected, address } = useAccount();
   const [loginStatus, setLoginStatus] = useState<
@@ -155,68 +155,6 @@ const Index = () => {
       refresh();
     }
   }, [errorMsg]);
-  // if (loginStatus === 'loading') return <div>Logging in...</div>;
-  // if (loginStatus === 'error' || responseCode !== 200)
-  //   return (
-  //     <div
-  //       style={{
-  //         minHeight: '60vh',
-  //         display: 'flex',
-  //         flexDirection: 'column',
-  //         alignItems: 'center',
-  //         justifyContent: 'center'
-  //       }}>
-  //       <button
-  //         onClick={async () => {
-  //           await disconnect();
-  //           Object.keys(localStorage).forEach((key) => {
-  //             if (key.startsWith('walletconnect')) localStorage.removeItem(key);
-  //           });
-  //           window.location.reload();
-  //         }}
-  //         style={{
-  //           padding: '14px 32px',
-  //           background: 'linear-gradient(90deg, #6a82fb 0%, #fc5c7d 100%)',
-  //           color: '#fff',
-  //           fontWeight: 'bold',
-  //           fontSize: '1.1rem',
-  //           border: 'none',
-  //           borderRadius: '8px',
-  //           boxShadow: '0 2px 12px rgba(0,0,0,0.07)',
-  //           cursor: 'pointer',
-  //           marginBottom: '22px',
-  //           transition: 'background 0.2s, transform 0.2s'
-  //         }}
-  //         onMouseOver={(e) =>
-  //           (e.currentTarget.style.background =
-  //             'linear-gradient(90deg, #fc5c7d 0%, #6a82fb 100%)')
-  //         }
-  //         onMouseOut={(e) =>
-  //           (e.currentTarget.style.background =
-  //             'linear-gradient(90deg, #6a82fb 0%, #fc5c7d 100%)')
-  //         }>
-  //         &#x21bb; Reset Wallet
-  //       </button>
-  //       {errorMsg && (
-  //         <div
-  //           style={{
-  //             color: '#fff',
-  //             background: 'rgba(252,92,125,0.9)',
-  //             padding: '14px 28px',
-  //             borderRadius: '8px',
-  //             fontWeight: 'bold',
-  //             fontSize: '1.1rem',
-  //             boxShadow: '0 2px 12px rgba(0,0,0,0.07)',
-  //             marginTop: 8,
-  //             textAlign: 'center',
-  //             maxWidth: 400
-  //           }}>
-  //           {errorMsg}
-  //         </div>
-  //       )}
-  //     </div>
-  //   );
-  // if (loginStatus === 'loading') return <div>Logging in...</div>;
 
   return (
     <div className='min-h-screen flex flex-col items-center justify-center bg-neoplay-black p-4'>
@@ -238,6 +176,15 @@ const Index = () => {
           <h2 className='font-pixel text-xl text-center mb-6'>ACCESS PORTAL</h2>
 
           <div className='space-y-4'>
+            <input
+              type='password'
+              placeholder='Enter beta password for access'
+              className='w-full px-4 py-2 border border-neoplay-green rounded-md bg-neoplay-black text-neoplay-green placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-neoplay-green focus:border-neoplay-green'
+              value={password}
+              onChange={(e) => (
+                e.preventDefault(), setPassword(e.target.value)
+              )}
+            />
             <button
               onClick={handleConnect}
               disabled={isConnecting}
@@ -246,7 +193,7 @@ const Index = () => {
             </button>
 
             <div className='text-center text-xs text-neoplay-green mt-4 font-mono'>
-              PRIVATE BETA v0.1.2
+              PRIVATE BETA v0.1.3
             </div>
           </div>
         </div>
