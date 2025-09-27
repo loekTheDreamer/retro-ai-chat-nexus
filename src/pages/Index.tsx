@@ -158,18 +158,22 @@ const Index = () => {
 
   return (
     <div className='min-h-screen flex flex-col items-center justify-center bg-neoplay-black p-4'>
-      <div className='max-w-md w-full space-y-10'>
+      <div className='max-w-md w-full space-y-4'>
         {/* Logo */}
         <div className='text-center'>
           <h1 className='font-pixel text-4xl text-neoplay-green animate-text-flicker mb-2'>
             NEOPLAY.FUN
           </h1>
-          <p className='font-pixel text-xl text-white mt-4 mb-8'>
-            <span className='block'>AGENTIC AI</span>
-            <span className='block mt-2'>MEETS</span>
-            <span className='block mt-2 text-neoplay-green'>GAMING</span>
+          <p className='font-pixel text-xl text-white mt-4 '>
+            <span className='block'>AGENTIC AI MEETS</span>
+            <span className='block mt-2'>
+              <span className='text-neoplay-green'>GAMING</span>
+              <span className='text-white'> ON </span>
+              <span className='text-neoplay-green'>SOLANA</span>
+            </span>
           </p>
         </div>
+        {/* MINT • TRADE • PLAY */}
 
         {/* Login Box */}
         <div className='pixel-borders bg-neoplay-black p-6 space-y-6 animate-pixel-shine'>
@@ -191,12 +195,15 @@ const Index = () => {
               className='retro-btn w-full flex items-center justify-center'>
               {isConnecting ? 'Sign message...' : 'CONNECT WALLET'}
             </button>
-
             <div className='text-center text-xs text-neoplay-green mt-4 font-mono'>
-              PRIVATE BETA v0.1.3
+              PRIVATE BETA v0.1.4
             </div>
           </div>
         </div>
+      </div>
+
+      <div className='text-center text-xs text-neoplay-green mt-4 font-mono'>
+        CREATE • PLAY • MINT • TRADE
       </div>
 
       <WalletModal
